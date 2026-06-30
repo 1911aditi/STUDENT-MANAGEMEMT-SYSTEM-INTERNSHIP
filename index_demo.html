@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🎓</div>
+        <div>
+          <h2>Student Dashboard</h2>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a href="#" class="menu-item active">Dashboard</a>
+        <a href="#" class="menu-item">Students</a>
+        <a href="#" class="menu-item">Colleges</a>
+        <a href="#" class="menu-item">Guides</a>
+        <a href="#" class="menu-item">Departments</a>
+        <a href="#" class="menu-item">Courses</a>
+        <a href="#" class="menu-item">Reports</a>
+        <a href="#" class="menu-item">Charts</a>
+        <a href="#" class="menu-item">Export Data</a>
+        <a href="#" class="menu-item">Settings</a>
+        <a href="#" class="menu-item">Users</a>
+        <a href="#" class="menu-item">Backup</a>
+        <a href="#" class="menu-item">About</a>
+      </nav>
+
+      <div class="admin-card">
+        <div class="admin-avatar">👤</div>
+        <div>
+          <div class="admin-name">Admin User</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn" id="toggleSidebar">☰</button>
+        </div>
+
+        <div class="topbar-right">
+          <select class="year-filter">
+            <option>All Years</option>
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option>3rd Year</option>
+            <option>4th Year</option>
+          </select>
+          <div class="date-box" id="currentDateTime"></div>
+        </div>
+      </header>
+
+      <!-- Stats -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div>
+            <div class="stat-title">Total Students</div>
+            <div class="stat-value" id="totalStudents">2358</div>
+            <div class="stat-sub">+120 this month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">🏫</div>
+          <div>
+            <div class="stat-title">Total Colleges</div>
+            <div class="stat-value" id="totalColleges">28</div>
+            <div class="stat-sub">+2 this month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">👨‍🏫</div>
+          <div>
+            <div class="stat-title">Total Guides</div>
+            <div class="stat-value" id="totalGuides">142</div>
+            <div class="stat-sub">+5 this month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon orange">🏢</div>
+          <div>
+            <div class="stat-title">Departments</div>
+            <div class="stat-value" id="totalDepartments">12</div>
+            <div class="stat-sub">No change</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Row 1 -->
+      <section class="dashboard-grid two-col">
+        <div class="card">
+          <div class="card-header">
+            <h3>Students by College</h3>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="collegeChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Students Under Guide</h3>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="guideChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Row 2 -->
+      <section class="dashboard-grid three-col">
+        <div class="card">
+          <div class="card-header">
+            <h3>Students by Department</h3>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="departmentChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Students by Year</h3>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="yearChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card quick-actions">
+          <div class="card-header">
+            <h3>Quick Actions</h3>
+          </div>
+
+          <div class="action-grid">
+            <button class="action-btn">Add Student</button>
+            <button class="action-btn">Add College</button>
+            <button class="action-btn">Add Guide</button>
+            <button class="action-btn">Generate Report</button>
+            <button class="action-btn">View Charts</button>
+            <button class="action-btn">Export Data</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Row -->
+      <section class="dashboard-grid bottom-grid">
+        <div class="card">
+          <div class="card-header">
+            <h3>Recent Records</h3>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Student Name</th>
+                  <th>College</th>
+                  <th>Department</th>
+                  <th>Guide</th>
+                  <th>Year</th>
+                  <th>Added On</th>
+                </tr>
+              </thead>
+              <tbody id="recordsTable">
+                <tr>
+                  <td>STU1258</td>
+                  <td>Aarav Sharma</td>
+                  <td>ABC College</td>
+                  <td>Computer Science</td>
+                  <td>Dr. Sharma</td>
+                  <td>3rd Year</td>
+                  <td>24 May 2025</td>
+                </tr>
+                <tr>
+                  <td>STU1257</td>
+                  <td>Priya Verma</td>
+                  <td>XYZ Institute</td>
+                  <td>Electronics</td>
+                  <td>Dr. Verma</td>
+                  <td>2nd Year</td>
+                  <td>24 May 2025</td>
+                </tr>
+                <tr>
+                  <td>STU1256</td>
+                  <td>Rohan Singh</td>
+                  <td>PQR University</td>
+                  <td>Mechanical</td>
+                  <td>Dr. Singh</td>
+                  <td>4th Year</td>
+                  <td>24 May 2025</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card system-info">
+          <div class="card-header">
+            <h3>System Info</h3>
+          </div>
+
+          <div class="info-list">
+            <div class="info-row"><span>Database</span><strong>Offline / Local</strong></div>
+            <div class="info-row"><span>Status</span><strong class="status-live">Running</strong></div>
+            <div class="info-row"><span>Last Backup</span><strong>Local Backup</strong></div>
+            <div class="info-row"><span>Version</span><strong>1.0.0</strong></div>
+          </div>
+
+          <div class="system-ok">System Running Smoothly</div>
+        </div>
+      </section>
+
+      <!-- Live Input Form -->
+      <section class="card form-card">
+        <div class="card-header">
+          <h3>Add Student Data and Update Dashboard Live</h3>
+        </div>
+
+        <form id="studentForm" class="student-form">
+          <input type="text" id="studentName" placeholder="Student Name" required />
+          <input type="text" id="collegeName" placeholder="College Name" required />
+          <input type="text" id="departmentName" placeholder="Department Name" required />
+          <input type="text" id="guideName" placeholder="Guide Name" required />
+
+          <select id="yearName" required>
+            <option value="">Select Year</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
+
+          <button type="submit" class="submit-btn">Add Student</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
