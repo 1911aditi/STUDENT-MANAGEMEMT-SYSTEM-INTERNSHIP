@@ -1,3 +1,4 @@
+let excelData = [];
 let dashboardData = {
   totalStudents: 2358,
   totalColleges: 28,
@@ -36,11 +37,9 @@ let dashboardData = {
     "Others": 147
   },
 
-  years: {
-    "1st Year": 642,
-    "2nd Year": 613,
-    "3rd Year": 560,
-    "4th Year": 543
+  genders: {
+    "Male": 0,
+    "Female": 0
   },
 
   records: [
@@ -220,12 +219,12 @@ function createCharts() {
   yearChart = new Chart(yearCtx, {
     type: "pie",
     data: {
-      labels: Object.keys(dashboardData.years),
-      datasets: [{
-        data: Object.values(dashboardData.years),
-        backgroundColor: ["#2c67f2", "#35c885", "#ffb020", "#8b5cf6"],
-        borderWidth: 0
-      }]
+        labels: Object.keys(dashboardData.genders),
+        datasets: [{
+            data: Object.values(dashboardData.genders),
+            backgroundColor: ["#2c67f2", "#35c885"],
+            borderWidth: 0
+        }]
     },
     options: {
       responsive: true,
@@ -252,8 +251,8 @@ function refreshCharts() {
   departmentChart.data.datasets[0].data = Object.values(dashboardData.departments);
   departmentChart.update();
 
-  yearChart.data.labels = Object.keys(dashboardData.years);
-  yearChart.data.datasets[0].data = Object.values(dashboardData.years);
+  yearChart.data.labels = Object.keys(dashboardData.genders);
+  yearChart.data.datasets[0].data = Object.values(dashboardData.genders);
   yearChart.update();
 }
 
@@ -302,11 +301,6 @@ function addStudentRecord(student) {
     dashboardData.totalDepartments += 1;
   }
   dashboardData.departments[student.department] += 1;
-
-  if (!dashboardData.years[student.year]) {
-    dashboardData.years[student.year] = 0;
-  }
-  dashboardData.years[student.year] += 1;
 
   dashboardData.records.unshift(student);
 
@@ -358,3 +352,113 @@ function init() {
 }
 
 init();
+
+document.getElementById("excelFile").addEventListener("change", function (event) {
+
+    const file = event.target.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+        const data = new Uint8Array(e.target.result);
+
+        const workbook = XLSX.read(data, {
+            type: "array"
+        });
+
+        const sheetName = workbook.SheetNames[0];
+
+        const worksheet = workbook.Sheets[sheetName];
+
+        excelData = XLSX.utils.sheet_to_json(worksheet);
+
+        console.log(excelData);
+
+        dashboardData.records = [];
+
+dashboardData.colleges = {};
+
+dashboardData.guides = {};
+
+dashboardData.departments = {};
+
+dashboardData.genders = {
+    Male: 0,
+    Female: 0
+};
+
+dashboardData.totalStudents = excelData.length;
+
+dashboardData.totalColleges = 0;
+
+dashboardData.totalGuides = 0;
+
+dashboardData.totalDepartments = 0;
+
+excelData.forEach(student => {
+
+    dashboardData.records.push({
+        id: student.Student_ID,
+        studentName: student.Student_Name,
+        college: student.College,
+        department: student.Branch,
+        guide: student.Guide,
+        year: "-",
+        addedOn: "Excel"
+    });
+
+    // College Count
+    if (!dashboardData.colleges[student.College]) {
+        dashboardData.colleges[student.College] = 0;
+        dashboardData.totalColleges++;
+    }
+    dashboardData.colleges[student.College]++;
+
+    // Guide Count
+    if (!dashboardData.guides[student.Guide]) {
+        dashboardData.guides[student.Guide] = 0;
+        dashboardData.totalGuides++;
+    }
+    dashboardData.guides[student.Guide]++;
+
+    // Department Count
+    if (!dashboardData.departments[student.Branch]) {
+        dashboardData.departments[student.Branch] = 0;
+        dashboardData.totalDepartments++;
+    }
+    dashboardData.departments[student.Branch]++;
+
+
+    // Gender Count
+    if (!dashboardData.genders[student.Gender]) {
+    dashboardData.genders[student.Gender] = 0;
+    }
+
+const gender = student.Gender ? student.Gender.trim() : "";
+
+if (gender === "Male" || gender === "Female") {
+    dashboardData.genders[gender]++;
+}
+
+});
+
+updateStats();
+
+renderTable();
+
+refreshCharts();
+
+saveToLocalStorage();
+
+alert("Excel Loaded Successfully");
+
+};
+
+reader.readAsArrayBuffer(file);
+
+});
