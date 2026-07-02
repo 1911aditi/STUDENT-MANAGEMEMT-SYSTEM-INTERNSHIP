@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Backup Management</title>
+<link rel="stylesheet" href="common.css" />
+
+<link rel="stylesheet"
+href="backup.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- ===========================
+SIDEBAR
+=========================== -->
+
+<aside class="sidebar">
+
+<div class="logo">
+    <div class="logo-icon">
+        <i class="fa-solid fa-database"></i>
+        <i class="fa-solid fa-rotate-right sync-icon"></i>
+    </div>
+
+    <h2>Backup</h2>
+</div>
+
+    <nav class="menu">
+            <a href="index_demo.html" class="menu-item ">Dashboard</a>
+            <a href="student.html" class="menu-item">Students</a>
+            <a href="college.html" class="menu-item">Colleges</a>
+            <a href="guide.html" class="menu-item">Guides</a>
+            <a href="department.html" class="menu-item">Departments</a>
+            <a href="report.html" class="menu-item">Reports</a>
+            <a href="export.html" class="menu-item">Export Data</a>
+            <a href="settings.html" class="menu-item">Settings</a>
+            <a href="backup.html" class="menu-item active">Backup</a>
+            <a href="about.html" class="menu-item">About</a>
+    </nav>
+
+<div class="admin-card">
+
+<div class="admin-avatar">
+
+<i class="fa-solid fa-user"></i>
+
+</div>
+
+<div>
+
+<h4>Admin User</h4>
+
+<p>Administrator</p>
+
+</div>
+
+</div>
+
+</aside>
+
+<!-- ===========================
+MAIN
+=========================== -->
+
+<div class="main">
+
+<header class="topbar">
+
+<div class="topbar-left">
+
+<button id="toggleSidebar">
+
+<i class="fa-solid fa-bars"></i>
+
+</button>
+
+<h1>Backup Management</h1>
+
+</div>
+
+<div class="topbar-right">
+
+<select>
+
+<option>Batch-2 2026</option>
+
+</select>
+
+<div class="notification">
+
+<i class="fa-solid fa-bell"></i>
+
+<span>3</span>
+
+</div>
+
+<div class="profile">
+
+<i class="fa-solid fa-user-circle"></i>
+
+<span>Admin User</span>
+
+</div>
+
+</div>
+
+</header>
+
+<!-- ===========================
+BREADCRUMB
+=========================== -->
+
+<div class="breadcrumb">
+
+Dashboard >
+
+<strong>Backup</strong>
+
+</div>
+
+<!-- ===========================
+STATISTICS
+=========================== -->
+
+<section class="stats-grid">
+
+<div class="stat-card">
+
+<div class="icon blue">
+
+<i class="fa-solid fa-database"></i>
+
+</div>
+
+<div>
+
+<h4>Total Backups</h4>
+
+<h2 id="totalBackups">0</h2>
+
+<p>All backups created</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="icon green">
+
+<i class="fa-solid fa-circle-check"></i>
+
+</div>
+
+<div>
+
+<h4>Latest Backup</h4>
+
+<h2 id="latestBackup">
+
+--
+
+</h2>
+
+<p>Last backup created</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="icon orange">
+
+<i class="fa-solid fa-clock"></i>
+
+</div>
+
+<div>
+
+<h4>Next Backup</h4>
+
+<h2>
+
+Tomorrow
+
+</h2>
+
+<p>Auto Backup</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="icon purple">
+
+<i class="fa-solid fa-hard-drive"></i>
+
+</div>
+
+<div>
+
+<h4>Total Storage</h4>
+
+<h2 id="storage">
+
+0 MB
+
+</h2>
+
+<p>Used Space</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ===========================================
+BACKUP ACTIONS
+=========================================== -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <h2>
+
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+
+            Backup Actions
+
+        </h2>
+
+    </div>
+
+    <div class="backup-actions">
+
+        <button
+            id="createBackup"
+            class="primary-btn">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Create Backup Now
+
+        </button>
+
+        <button
+            id="exportBackup"
+            class="success-btn">
+
+            <i class="fa-solid fa-file-excel"></i>
+
+            Export List
+
+        </button>
+
+        <button
+            id="printBackup"
+            class="secondary-btn">
+
+            <i class="fa-solid fa-print"></i>
+
+            Print
+
+        </button>
+
+    </div>
+
+    <div class="filter-grid">
+
+        <div class="form-group">
+
+            <label>
+
+                Backup Type
+
+            </label>
+
+            <select id="filterType">
+
+                <option value="All">
+
+                    All Types
+
+                </option>
+
+                <option value="Manual">
+
+                    Manual
+
+                </option>
+
+                <option value="Auto">
+
+                    Auto
+
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+
+                Status
+
+            </label>
+
+            <select id="filterStatus">
+
+                <option value="All">
+
+                    All Status
+
+                </option>
+
+                <option value="Completed">
+
+                    Completed
+
+                </option>
+
+                <option value="Processing">
+
+                    Processing
+
+                </option>
+
+                <option value="Failed">
+
+                    Failed
+
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+
+                Backup Date
+
+            </label>
+
+            <input
+                type="date"
+                id="filterDate">
+
+        </div>
+
+        <div class="form-group buttons">
+
+            <button
+                id="filterBtn"
+                class="primary-btn">
+
+                <i class="fa-solid fa-filter"></i>
+
+                Filter
+
+            </button>
+
+            <button
+                id="resetBtn"
+                class="secondary-btn">
+
+                <i class="fa-solid fa-rotate"></i>
+
+                Reset
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ===========================================
+BACKUP LIST
+=========================================== -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <h2>
+
+            <i class="fa-solid fa-database"></i>
+
+            Backup List
+
+        </h2>
+
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Backup Name</th>
+
+                    <th>Type</th>
+
+                    <th>Created On</th>
+
+                    <th>Size</th>
+
+                    <th>Status</th>
+
+                    <th>Created By</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="backupTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="table-footer">
+
+        <span id="backupCount">
+
+            Showing 0 backups
+
+        </span>
+
+    </div>
+
+</section>
+
+</div>
+
+</div>
+<script src="common.js"></script>
+<script src="backup.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Management</title>
+  <link rel="stylesheet" href="common.css" />
+  <link rel="stylesheet" href="student.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div>
+        <div class="logo">
+          <div class="logo-icon">🎓</div>
+          <div>
+            <h2>Students Dashboard</h2>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <a href="index_demo.html" class="menu-item">Dashboard</a>
+          <a href="student.html" class="menu-item active">Students</a>
+          <a href="college.html" class="menu-item">Colleges</a>
+          <a href="guide.html" class="menu-item">Guides</a>
+          <a href="department.html" class="menu-item">Department</a>
+          <a href="report.html" class="menu-item">Reports</a>
+          <a href="export.html" class="menu-item">Export Data</a>
+          <a href="settings.html" class="menu-item">Settings</a>
+          <a href="backup.html" class="menu-item">Backup</a>
+          <a href="about.html" class="menu-item">About</a>
+        </nav>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-avatar">👤</div>
+        <div>
+          <div class="admin-name">Admin User</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn" id="toggleSidebar">☰</button>
+          <div>
+            <h1 class="page-title">Students Management</h1>
+            <div class="breadcrumb">Dashboard &gt; Students</div>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <select class="batch-filter" id="batchFilter">
+            <option value="all">All Batches</option>
+            <option value="Batch-1 2025">Batch-1 2025</option>
+            <option value="Batch-2 2026" selected>Batch-2 2026</option>
+            <option value="Batch-3 2027">Batch-3 2027</option>
+          </select>
+          <div class="date-box" id="currentDateTime"></div>
+        </div>
+      </header>
+
+      <!-- Stats -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div>
+            <div class="stat-title">Total Students</div>
+            <div class="stat-value" id="totalStudents">2358</div>
+            <div class="stat-sub">+120 this month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">🟢</div>
+          <div>
+            <div class="stat-title">Active Students</div>
+            <div class="stat-value" id="activeStudents">2301</div>
+            <div class="stat-sub">+98 this month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">♂</div>
+          <div>
+            <div class="stat-title">Male Students</div>
+            <div class="stat-value" id="maleStudents">1420</div>
+            <div class="stat-sub">+60 this month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon pink">♀</div>
+          <div>
+            <div class="stat-title">Female Students</div>
+            <div class="stat-value" id="femaleStudents">938</div>
+            <div class="stat-sub">+58 this month</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main content row -->
+      <section class="content-grid">
+        <div class="content-left">
+          <!-- Search -->
+          <section class="card">
+            <div class="card-header">
+              <h3>Search Student</h3>
+            </div>
+
+            <form class="search-grid" id="searchForm">
+              <div class="form-group">
+                <label for="searchName">Name</label>
+                <input type="text" id="searchName" placeholder="Enter name" />
+              </div>
+
+              <div class="form-group">
+                <label for="searchId">Student ID</label>
+                <input type="text" id="searchId" placeholder="Enter ID" />
+              </div>
+
+              <div class="form-group">
+                <label for="searchCollege">College</label>
+                <select id="searchCollege">
+                  <option value="">All Colleges</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="searchBranch">Branch</label>
+                <select id="searchBranch">
+                  <option value="">All Branches</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="searchGuide">Guide</label>
+                <select id="searchGuide">
+                  <option value="">All Guides</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="searchBatch">Batch</label>
+                <select id="searchBatch">
+                  <option value="">All Batches</option>
+                </select>
+              </div>
+
+              <div class="search-actions">
+                <button type="submit" class="primary-btn">Search</button>
+                <button type="button" class="secondary-btn" id="resetSearch">Reset</button>
+              </div>
+            </form>
+          </section>
+
+          <!-- Student Information -->
+          <div class="student-row">
+
+          <section class="card student-card">
+            <div class="card-header">
+              <h3>Student Information</h3>
+            </div>
+
+            <form id="studentForm" class="student-form">
+              <div class="form-group">
+                <label for="studentId">Student ID *</label>
+                <input type="text" id="studentId" placeholder="Auto Generate" readonly />
+              </div>
+
+              <div class="form-group">
+                <label for="studentName">Student Name *</label>
+                <input type="text" id="studentName" placeholder="Enter full name" required />
+              </div>
+
+              <div class="form-group">
+                <label>Gender *</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="gender" value="Male" checked /> Male</label>
+                  <label><input type="radio" name="gender" value="Female" /> Female</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="dob">Date of Birth *</label>
+                <input type="date" id="dob" required />
+              </div>
+
+              <div class="form-group">
+                <label for="college">College *</label>
+                <input type="text" id="college" placeholder="Select College" required />
+              </div>
+
+              <div class="form-group">
+                <label for="department">Department *</label>
+                <input type="text" id="department" placeholder="Select Department" required />
+              </div>
+
+              <div class="form-group">
+                <label for="branch">Branch *</label>
+                <input type="text" id="branch" placeholder="Select Branch" required />
+              </div>
+
+              <div class="form-group">
+                <label for="semester">Semester *</label>
+                <select id="semester" required>
+                  <option value="">Select Semester</option>
+                  <option>Semester 1</option>
+                  <option>Semester 2</option>
+                  <option>Semester 3</option>
+                  <option>Semester 4</option>
+                  <option>Semester 5</option>
+                  <option>Semester 6</option>
+                  <option>Semester 7</option>
+                  <option>Semester 8</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="guide">Guide *</label>
+                <input type="text" id="guide" placeholder="Select Guide" required />
+              </div>
+
+              <div class="form-group">
+                <label for="project">Project *</label>
+                <input type="text" id="project" placeholder="Select Project" required />
+              </div>
+
+              <div class="form-group">
+                <label for="batch">Batch *</label>
+                <select id="batch" required>
+                  <option value="">Select Batch</option>
+                  <option>Batch-1 2025</option>
+                  <option selected>Batch-2 2026</option>
+                  <option>Batch-3 2027</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter email address" />
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" placeholder="Enter phone number" />
+              </div>
+
+              <div class="form-group form-group-wide">
+                <label for="address">Address</label>
+                <textarea id="address" placeholder="Enter full address"></textarea>
+              </div>
+
+              <div class="form-actions form-group-wide">
+                <button type="submit" class="primary-btn">Save</button>
+                <button type="button" class="success-btn" id="updateBtn">Update</button>
+                <button type="button" class="danger-btn" id="deleteBtn">Delete</button>
+                <button type="reset" class="secondary-btn" id="clearBtn">Clear</button>
+                <button type="button" class="secondary-btn print-btn" id="printIdCard">Print ID Card</button>
+              </div>
+            </form>
+            </section>
+
+<section class="card chart-card">
+
+    <div class="chart-item">
+
+        <h3>Students by Branch</h3>
+
+        <canvas id="branchChart"></canvas>
+
+    </div>
+
+    <hr>
+
+    <div class="chart-item">
+
+        <h3>Students by Gender</h3>
+
+        <canvas id="genderChart"></canvas>
+
+    </div>
+
+</section>
+
+</div>
+
+          <!-- Student Records -->
+          <section class="card">
+            <div class="card-header card-header-row">
+              <h3>Student Records</h3>
+              <button class="secondary-btn" id="exportStudents">Export Excel</button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>College</th>
+                    <th>Branch</th>
+                    <th>Guide</th>
+                    <th>Project</th>
+                    <th>Batch</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="studentTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="table-footer">
+              <div id="tableInfo">Showing 1 to 5 of 0 entries</div>
+            </div>
+          </section>
+        </div>
+
+        
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="common.js"></script>
+  <script src="student.js"></script>
+</body>
+</html>

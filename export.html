@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Export Data</title>
+<link rel="stylesheet" href="common.css" />
+
+<link rel="stylesheet"
+href="export.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<!---------------- SIDEBAR ---------------->
+
+<aside class="sidebar">
+
+<div>
+
+<div class="logo">
+
+<div class="logo-icon">
+
+<i class="fa-solid fa-graduation-cap"></i>
+
+</div>
+
+<div>
+
+<h2>Export Data</h2>
+
+</div>
+
+</div>
+      <nav class="menu">
+        <a href="index_demo.html" class="menu-item ">Dashboard</a>
+        <a href="student.html" class="menu-item">Students</a>
+        <a href="college.html" class="menu-item">Colleges</a>
+        <a href="guide.html" class="menu-item">Guides</a>
+        <a href="department.html" class="menu-item">Departments</a>
+        <a href="report.html" class="menu-item">Reports</a>
+        <a href="export.html" class="menu-item active">Export Data</a>
+        <a href="settings.html" class="menu-item">Settings</a>
+        <a href="backup.html" class="menu-item">Backup</a>
+        <a href="about.html" class="menu-item">About</a>
+      </nav>
+
+</div>
+
+<div class="admin-card">
+
+<div class="admin-avatar">
+
+<i class="fa-solid fa-user"></i>
+
+</div>
+
+<div>
+
+<div class="admin-name">
+
+Admin User
+
+</div>
+
+<div class="admin-role">
+
+Administrator
+
+</div>
+
+</div>
+
+</div>
+
+</aside>
+
+<!---------------- MAIN ---------------->
+
+<main class="main">
+
+<header class="topbar">
+
+<div class="topbar-left">
+
+<button
+id="toggleSidebar"
+class="icon-btn">
+
+☰
+
+</button>
+
+<div>
+
+<h1 class="page-title">
+
+Export Data
+
+</h1>
+
+<div class="breadcrumb">
+
+Dashboard >
+Export Data
+
+</div>
+
+</div>
+
+</div>
+
+<div class="topbar-right">
+
+<select
+class="batch-filter">
+
+<option>
+
+Today
+
+</option>
+
+<option selected>
+
+This Month
+
+</option>
+
+<option>
+
+This Year
+
+</option>
+
+</select>
+
+<div
+class="date-box"
+id="currentDateTime">
+
+</div>
+
+</div>
+
+</header>
+
+<!---------------- SUMMARY ---------------->
+
+<section class="stats-grid">
+
+<div class="stat-card">
+
+<div class="stat-icon blue">
+
+<i class="fa-solid fa-file-export"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Today's Exports
+
+</div>
+
+<div
+class="stat-value"
+id="todayExports">
+
+18
+
+</div>
+
+<div class="stat-sub">
+
++5 Today
+
+</div>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon green">
+
+<i class="fa-solid fa-download"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Monthly Exports
+
+</div>
+
+<div
+class="stat-value"
+id="monthExports">
+
+156
+
+</div>
+
+<div class="stat-sub">
+
++28 This Month
+
+</div>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon purple">
+
+<i class="fa-solid fa-file-excel"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Most Used Format
+
+</div>
+
+<div
+class="stat-value">
+
+Excel
+
+</div>
+
+<div class="stat-sub">
+
+68%
+
+</div>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon orange">
+
+<i class="fa-solid fa-users"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Most Exported
+
+</div>
+
+<div
+class="stat-value">
+
+Students
+
+</div>
+
+<div class="stat-sub">
+
+42%
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!---------------- EXPORT FILTER ---------------->
+
+<section class="card">
+
+<div class="card-header">
+
+<h3>Export Data</h3>
+
+</div>
+
+<form class="search-grid">
+
+<div class="form-group">
+
+<label>Data Type</label>
+
+<select id="dataType">
+
+<option>Students</option>
+<option>Colleges</option>
+<option>Departments</option>
+<option>Guides</option>
+<option>Courses</option>
+<option>Projects</option>
+<option>Reports</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Department</label>
+
+<select id="department">
+
+<option>All Departments</option>
+<option>Computer Science</option>
+<option>Information Technology</option>
+<option>Mechanical</option>
+<option>Civil</option>
+<option>Electrical</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>College</label>
+
+<select id="college">
+
+<option>All Colleges</option>
+<option>KIIT University</option>
+<option>SOA University</option>
+<option>CET Bhubaneswar</option>
+<option>ITER</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>File Format</label>
+
+<select id="format">
+
+<option>Excel (.xlsx)</option>
+<option>CSV (.csv)</option>
+<option>PDF (.pdf)</option>
+
+</select>
+
+</div>
+
+</form>
+
+</section>
+
+<!---------------- EXPORT OPTIONS ---------------->
+
+<section class="card">
+
+<div class="card-header">
+
+<h3>Export Options</h3>
+
+</div>
+
+<div class="option-grid">
+
+<label>
+
+<input
+type="checkbox"
+checked>
+
+Include Headers
+
+</label>
+
+<label>
+
+<input
+type="checkbox"
+checked>
+
+Include All Records
+
+</label>
+
+<label>
+
+<input
+type="checkbox">
+
+Compress ZIP File
+
+</label>
+
+<label>
+
+<input
+type="checkbox">
+
+Password Protect PDF
+
+</label>
+
+</div>
+
+<div class="export-buttons">
+
+<button
+id="exportExcel"
+class="success-btn">
+
+<i class="fa-solid fa-file-excel"></i>
+
+Export Excel
+
+</button>
+
+<button
+id="exportCSV"
+class="primary-btn">
+
+<i class="fa-solid fa-file-csv"></i>
+
+Export CSV
+
+</button>
+
+<button
+id="exportPDF"
+class="danger-btn">
+
+<i class="fa-solid fa-file-pdf"></i>
+
+Export PDF
+
+</button>
+
+</div>
+
+</section>
+
+<!---------------- DATA PREVIEW ---------------->
+
+<section class="card">
+
+<div class="card-header card-header-row">
+
+<h3>Data Preview</h3>
+
+<div>
+
+Showing Sample Records
+
+</div>
+
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Name</th>
+
+<th>Department</th>
+
+<th>College</th>
+
+<th>Guide</th>
+
+<th>Year</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody id="previewTable">
+
+<tr>
+
+<td>ST001</td>
+
+<td>Rahul Kumar</td>
+
+<td>Computer Science</td>
+
+<td>KIIT University</td>
+
+<td>Dr. Sharma</td>
+
+<td>3rd Year</td>
+
+<td>Active</td>
+
+</tr>
+
+<tr>
+
+<td>ST002</td>
+
+<td>Priya Singh</td>
+
+<td>Mechanical</td>
+
+<td>SOA University</td>
+
+<td>Dr. Anita</td>
+
+<td>4th Year</td>
+
+<td>Active</td>
+
+</tr>
+
+<tr>
+
+<td>ST003</td>
+
+<td>Amit Das</td>
+
+<td>Electrical</td>
+
+<td>CET Bhubaneswar</td>
+
+<td>Dr. Rajesh</td>
+
+<td>2nd Year</td>
+
+<td>Active</td>
+
+</tr>
+
+<tr>
+
+<td>ST004</td>
+
+<td>Neha Gupta</td>
+
+<td>Civil</td>
+
+<td>ITER</td>
+
+<td>Dr. Sandeep</td>
+
+<td>1st Year</td>
+
+<td>Active</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!---------------- EXPORT HISTORY ---------------->
+
+<section class="card">
+
+<div class="card-header card-header-row">
+
+<h3>Export History</h3>
+
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Export ID</th>
+
+<th>Module</th>
+
+<th>Format</th>
+
+<th>Records</th>
+
+<th>Exported By</th>
+
+<th>Date</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody id="historyTable">
+
+<tr>
+
+<td>EXP001</td>
+
+<td>Students</td>
+
+<td>Excel</td>
+
+<td>2358</td>
+
+<td>Admin</td>
+
+<td>02 Jul 2026</td>
+
+<td>
+<span class="status success">
+Completed
+</span>
+</td>
+
+</tr>
+
+<tr>
+
+<td>EXP002</td>
+
+<td>Departments</td>
+
+<td>CSV</td>
+
+<td>12</td>
+
+<td>Admin</td>
+
+<td>01 Jul 2026</td>
+
+<td>
+<span class="status success">
+Completed
+</span>
+</td>
+
+</tr>
+
+<tr>
+
+<td>EXP003</td>
+
+<td>Guides</td>
+
+<td>PDF</td>
+
+<td>142</td>
+
+<td>Admin</td>
+
+<td>30 Jun 2026</td>
+
+<td>
+<span class="status success">
+Completed
+</span>
+</td>
+
+</tr>
+
+<tr>
+
+<td>EXP004</td>
+
+<td>Colleges</td>
+
+<td>Excel</td>
+
+<td>28</td>
+
+<td>Admin</td>
+
+<td>29 Jun 2026</td>
+
+<td>
+<span class="status success">
+Completed
+</span>
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="table-footer">
+
+Showing
+<strong>4</strong>
+Recent Exports
+
+</div>
+
+<div class="pagination">
+
+<button class="secondary-btn">
+
+Previous
+
+</button>
+
+<button class="primary-btn">
+
+1
+
+</button>
+
+<button class="secondary-btn">
+
+2
+
+</button>
+
+<button class="secondary-btn">
+
+Next
+
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+<script src="common.js"></script>
+<script src="export.js"></script>
+
+</body>
+
+</html>

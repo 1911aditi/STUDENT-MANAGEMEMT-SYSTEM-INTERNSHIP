@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Dashboard</title>
+  <link rel="stylesheet" href="common.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,19 +19,16 @@
       </div>
 
       <nav class="menu">
-        <a href="#" class="menu-item active">Dashboard</a>
-        <a href="#" class="menu-item">Students</a>
-        <a href="#" class="menu-item">Colleges</a>
-        <a href="#" class="menu-item">Guides</a>
-        <a href="#" class="menu-item">Departments</a>
-        <a href="#" class="menu-item">Courses</a>
-        <a href="#" class="menu-item">Reports</a>
-        <a href="#" class="menu-item">Charts</a>
-        <a href="#" class="menu-item">Export Data</a>
-        <a href="#" class="menu-item">Settings</a>
-        <a href="#" class="menu-item">Users</a>
-        <a href="#" class="menu-item">Backup</a>
-        <a href="#" class="menu-item">About</a>
+        <a href="index_demo.html" class="menu-item active">Dashboard</a>
+        <a href="student.html" class="menu-item">Students</a>
+        <a href="college.html" class="menu-item">Colleges</a>
+        <a href="guide.html" class="menu-item">Guides</a>
+        <a href="department.html" class="menu-item">Departments</a>
+        <a href="report.html" class="menu-item">Reports</a>
+        <a href="export.html" class="menu-item">Export Data</a>
+        <a href="settings.html" class="menu-item">Settings</a>
+        <a href="backup.html" class="menu-item">Backup</a>
+        <a href="about.html" class="menu-item">About</a>
       </nav>
 
       <div class="admin-card">
@@ -234,34 +232,16 @@
         </div>
       </section>
 
-      <!-- Live Input Form -->
-      <section class="card form-card">
-        <div class="card-header">
-          <h3>Add Student Data and Update Dashboard Live</h3>
-        </div>
+      
+       </div>
 
-        <form id="studentForm" class="student-form">
-          <input type="text" id="studentName" placeholder="Student Name" required />
-          <input type="text" id="collegeName" placeholder="College Name" required />
-          <input type="text" id="departmentName" placeholder="Department Name" required />
-          <input type="text" id="guideName" placeholder="Guide Name" required />
-
-          <select id="yearName" required>
-            <option value="">Select Year</option>
-            <option value="1st Year">1st Year</option>
-            <option value="2nd Year">2nd Year</option>
-            <option value="3rd Year">3rd Year</option>
-            <option value="4th Year">4th Year</option>
-          </select>
-
-          <button type="submit" class="submit-btn">Add Student</button>
-        </form>
-      </section>
+       
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="common.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

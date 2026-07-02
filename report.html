@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Reports Management</title>
+<link rel="stylesheet" href="common.css" />
+
+<link rel="stylesheet" href="report.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<!---------------- SIDEBAR ---------------->
+
+<aside class="sidebar">
+
+<div>
+
+<div class="logo">
+
+<div class="logo-icon">🎓
+</div>
+
+<div>
+<h2>Reports Dashboard</h2>
+</div>
+
+</div>
+<nav class="menu">
+        <a href="index_demo.html" class="menu-item ">Dashboard</a>
+        <a href="student.html" class="menu-item">Students</a>
+        <a href="college.html" class="menu-item">Colleges</a>
+        <a href="guide.html" class="menu-item">Guides</a>
+        <a href="department.html" class="menu-item">Departments</a>
+        <a href="report.html" class="menu-item active">Reports</a>
+        <a href="export.html" class="menu-item">Export Data</a>
+        <a href="settings.html" class="menu-item">Settings</a>
+        <a href="backup.html" class="menu-item">Backup</a>
+        <a href="about.html" class="menu-item">About</a>
+      </nav>
+
+</div>
+
+<div class="admin-card">
+
+<div class="admin-avatar">👤</div>
+
+<div>
+
+<div class="admin-name">
+Admin User
+</div>
+
+<div class="admin-role">
+Administrator
+</div>
+
+</div>
+
+</div>
+
+</aside>
+
+<!---------------- MAIN ---------------->
+
+<main class="main">
+
+<header class="topbar">
+
+<div class="topbar-left">
+
+<button
+id="toggleSidebar"
+class="icon-btn">
+
+☰
+
+</button>
+
+<div>
+
+<h1 class="page-title">
+
+Reports
+
+</h1>
+
+<div class="breadcrumb">
+
+Dashboard >
+Reports
+
+</div>
+
+</div>
+
+</div>
+
+<div class="topbar-right">
+
+<select
+class="batch-filter">
+
+<option>
+Today
+</option>
+
+<option selected>
+This Month
+</option>
+
+<option>
+This Year
+</option>
+
+</select>
+
+<div
+class="date-box"
+id="currentDateTime">
+
+</div>
+
+</div>
+
+</header>
+
+<!---------------- STATS ---------------->
+
+<section class="stats-grid">
+
+<div class="stat-card">
+
+<div class="stat-icon blue">
+<i class="fa-solid fa-users"></i>
+</div>
+
+<div>
+
+<div class="stat-title">
+Total Students
+</div>
+
+<div
+class="stat-value"
+id="studentCount">
+
+2358
+
+</div>
+
+<div class="stat-sub">
+
++120 this month
+
+</div>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon green">
+<i class="fa-solid fa-building-columns"></i>
+</div>
+
+<div>
+
+<div class="stat-title">
+Total Colleges
+</div>
+
+<div
+class="stat-value"
+id="collegeCount">
+
+28
+
+</div>
+
+<div class="stat-sub">
+
++2 this month
+
+</div>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon purple">
+<i class="fa-solid fa-user-tie"></i>
+</div>
+
+<div>
+
+<div class="stat-title">
+Total Guides
+</div>
+
+<div
+class="stat-value"
+id="guideCount">
+
+142
+
+</div>
+
+<div class="stat-sub">
+
++5 this month
+
+</div>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon orange">
+<i class="fa-solid fa-file-lines"></i>
+</div>
+
+<div>
+
+<div class="stat-title">
+Reports Generated
+</div>
+
+<div
+class="stat-value"
+id="reportCount">
+
+156
+
+</div>
+
+<div class="stat-sub">
+
++15 this month
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!---------------- FILTERS ---------------->
+
+<section class="card">
+
+<div class="card-header">
+
+<h3>Generate Reports</h3>
+
+</div>
+
+<form class="search-grid">
+
+<div class="form-group">
+
+<label>Report Type</label>
+
+<select id="reportType">
+
+<option>All Reports</option>
+<option>Student Report</option>
+<option>College Report</option>
+<option>Department Report</option>
+<option>Guide Report</option>
+<option>Course Report</option>
+<option>Project Report</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Department</label>
+
+<select id="departmentFilter">
+
+<option>All Departments</option>
+<option>Computer Science</option>
+<option>Information Technology</option>
+<option>Mechanical</option>
+<option>Civil</option>
+<option>Electrical</option>
+<option>Electronics</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>College</label>
+
+<select id="collegeFilter">
+
+<option>All Colleges</option>
+<option>KIIT University</option>
+<option>SOA University</option>
+<option>CET Bhubaneswar</option>
+<option>ITER</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Guide</label>
+
+<select id="guideFilter">
+
+<option>All Guides</option>
+<option>Dr. Rajesh Sharma</option>
+<option>Dr. Anita Verma</option>
+<option>Dr. Sandeep Singh</option>
+
+</select>
+
+</div>
+
+<div class="search-actions">
+
+<button
+class="primary-btn">
+
+<i class="fa-solid fa-file-export"></i>
+
+Generate Report
+
+</button>
+
+<button
+type="reset"
+class="secondary-btn">
+
+Reset
+
+</button>
+
+</div>
+
+</form>
+
+</section>
+
+<!---------------- CHARTS ---------------->
+
+<section class="report-grid">
+
+<div class="card">
+
+<div class="card-header">
+
+<h3>Reports Generated Over Time</h3>
+
+</div>
+
+<div class="chart-box">
+
+<canvas id="reportTrendChart"></canvas>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-header">
+
+<h3>Reports by Type</h3>
+
+</div>
+
+<div class="chart-box">
+
+<canvas id="reportTypeChart"></canvas>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-header">
+
+<h3>Reports by Format</h3>
+
+</div>
+
+<div class="chart-box">
+
+<canvas id="reportFormatChart"></canvas>
+
+</div>
+
+</div>
+
+</section>
+
+<!---------------- REPORT TABLE ---------------->
+
+<section class="card">
+
+<div class="card-header card-header-row">
+
+<h3>Generated Reports</h3>
+
+<button
+id="exportReports"
+class="secondary-btn">
+
+<i class="fa-solid fa-download"></i>
+
+Export CSV
+
+</button>
+
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Report ID</th>
+
+<th>Report Name</th>
+
+<th>Type</th>
+
+<th>Department</th>
+
+<th>Generated By</th>
+
+<th>Date</th>
+
+<th>Format</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="reportTableBody">
+
+<tr>
+
+<td>REP001</td>
+
+<td>Student Summary</td>
+
+<td>Student</td>
+
+<td>Computer Science</td>
+
+<td>Admin</td>
+
+<td>02 Jul 2026</td>
+
+<td>PDF</td>
+
+<td>
+<span class="status completed">
+Completed
+</span>
+</td>
+
+<td class="action-cell">
+
+<button class="table-action-btn download-btn">
+
+<i class="fa-solid fa-download"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>REP002</td>
+
+<td>Department Report</td>
+
+<td>Department</td>
+
+<td>Mechanical</td>
+
+<td>Admin</td>
+
+<td>01 Jul 2026</td>
+
+<td>Excel</td>
+
+<td>
+<span class="status completed">
+Completed
+</span>
+</td>
+
+<td class="action-cell">
+
+<button class="table-action-btn download-btn">
+
+<i class="fa-solid fa-download"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>REP003</td>
+
+<td>College Report</td>
+
+<td>College</td>
+
+<td>—</td>
+
+<td>Admin</td>
+
+<td>30 Jun 2026</td>
+
+<td>CSV</td>
+
+<td>
+<span class="status processing">
+Processing
+</span>
+</td>
+
+<td class="action-cell">
+
+<button class="table-action-btn download-btn">
+
+<i class="fa-solid fa-download"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="table-footer">
+
+Showing
+<strong>3</strong>
+Reports
+
+</div>
+
+<div class="pagination">
+
+<button class="secondary-btn">
+
+Previous
+
+</button>
+
+<button class="primary-btn">
+
+1
+
+</button>
+
+<button class="secondary-btn">
+
+2
+
+</button>
+
+<button class="secondary-btn">
+
+Next
+
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+<script src="common.js"></script>
+
+<script src="report.js"></script>
+
+</body>
+
+</html>

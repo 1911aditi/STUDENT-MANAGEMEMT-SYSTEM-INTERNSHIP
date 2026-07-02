@@ -1,0 +1,132 @@
+:root {
+  --primary-color: #2c67f2;
+  --primary-hover: #1f56d8;
+  --sidebar-bg-1: #0d1b36;
+  --sidebar-bg-2: #11264b;
+  --page-bg: #f4f7fb;
+  --card-bg: #ffffff;
+  --text-color: #1b1f2a;
+  --muted-text: #6b7280;
+  --border-color: #dbe3ef;
+  --table-head-bg: #f9fbfd;
+  --success-color: #22c55e;
+  --danger-color: #ef4444;
+}
+
+.theme-blue {
+  --primary-color: #2c67f2;
+  --primary-hover: #1f56d8;
+}
+
+.theme-green {
+  --primary-color: #16a34a;
+  --primary-hover: #15803d;
+}
+
+.theme-purple {
+  --primary-color: #7c3aed;
+  --primary-hover: #6d28d9;
+}
+
+.theme-orange {
+  --primary-color: #ea580c;
+  --primary-hover: #c2410c;
+}
+
+.dark-mode {
+  --page-bg: #0f172a;
+  --card-bg: #111827;
+  --text-color: #f3f4f6;
+  --muted-text: #cbd5e1;
+  --border-color: #334155;
+  --table-head-bg: #1e293b;
+  --sidebar-bg-1: #020617;
+  --sidebar-bg-2: #0f172a;
+}
+
+body {
+  background: var(--page-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, var(--sidebar-bg-1), var(--sidebar-bg-2)) !important;
+}
+
+.card,
+.topbar,
+.stat-card {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.page-title,
+.card-header h3,
+.stat-value,
+.admin-name {
+  color: var(--text-color) !important;
+}
+.logo h2{
+    color:#ffffff !important;
+}
+
+.dark-mode .logo h2{
+    color:#ffffff !important;
+}
+
+.breadcrumb,
+.date-box,
+.stat-title,
+.table-footer,
+.admin-role {
+  color: var(--muted-text) !important;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.icon-btn,
+.batch-filter {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary-color) !important;
+}
+
+.primary-btn,
+.menu-item:hover,
+.menu-item.active {
+  background: var(--primary-color) !important;
+  color: #fff !important;
+}
+
+.primary-btn:hover {
+  background: var(--primary-hover) !important;
+}
+
+table th {
+  background: var(--table-head-bg) !important;
+  color: var(--muted-text) !important;
+}
+
+table td {
+  color: var(--text-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.secondary-btn {
+  border: 1px solid var(--border-color) !important;
+}
+
+.dark-mode .menu-item {
+  color: #dbeafe !important;
+}
+
+.dark-mode .admin-card {
+  background: rgba(255, 255, 255, 0.06) !important;
+}

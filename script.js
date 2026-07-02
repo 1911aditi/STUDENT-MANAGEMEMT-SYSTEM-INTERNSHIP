@@ -310,34 +310,6 @@ function addStudentRecord(student) {
   saveToLocalStorage();
 }
 
-document.getElementById("studentForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const studentName = document.getElementById("studentName").value.trim();
-  const collegeName = document.getElementById("collegeName").value.trim();
-  const departmentName = document.getElementById("departmentName").value.trim();
-  const guideName = document.getElementById("guideName").value.trim();
-  const yearName = document.getElementById("yearName").value;
-
-  if (!studentName || !collegeName || !departmentName || !guideName || !yearName) {
-    alert("Please fill all fields.");
-    return;
-  }
-
-  const newStudent = {
-    id: generateStudentId(),
-    studentName: studentName,
-    college: collegeName,
-    department: departmentName,
-    guide: guideName,
-    year: yearName,
-    addedOn: getTodayDate()
-  };
-
-  addStudentRecord(newStudent);
-  this.reset();
-});
-
 document.getElementById("toggleSidebar").addEventListener("click", function () {
   document.querySelector(".sidebar").classList.toggle("collapsed");
 });
