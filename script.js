@@ -373,16 +373,32 @@ dashboardData.totalGuides = 0;
 dashboardData.totalDepartments = 0;
 
 excelData.forEach(student => {
+  console.log("students")
 
     dashboardData.records.push({
         id: student.Student_ID,
         studentName: student.Student_Name,
+        gender:student.Gender,
         college: student.College,
         department: student.Branch,
         guide: student.Guide,
+        state:student.State,
         year: "-",
         addedOn: "Excel"
     });
+    // Odisha & Outside Odisha Count
+    if (!dashboardData.states) {
+        dashboardData.states = {
+            Odisha: 0,
+            Outside: 0
+        };
+    }
+
+    if (student.State === "Odisha") {
+        dashboardData.states.Odisha++;
+    } else {
+        dashboardData.states.Outside++;
+    }
 
     // College Count
     if (!dashboardData.colleges[student.College]) {

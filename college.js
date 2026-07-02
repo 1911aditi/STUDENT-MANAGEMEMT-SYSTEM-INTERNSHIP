@@ -440,18 +440,42 @@ function saveData() {
 }
 
 function loadData() {
-    const data = localStorage.getItem("collegeData");
 
-    if (data) {
-        colleges = JSON.parse(data);
-        filteredColleges = [...colleges];
+    const dashboard = JSON.parse(
+        localStorage.getItem("studentDashboardData")
+    );
+
+    if (dashboard && dashboard.colleges) {
+
+        colleges = Object.keys(dashboard.colleges).map((name, index) => ({
+
+            id: "COL" + String(index + 1).padStart(3, "0"),
+
+            name: name,
+
+            type: "",
+
+            district: "",
+
+            state: "",
+
+            university: "",
+
+            students: dashboard.colleges[name],
+
+            guides: 0,
+
+            departments: 0
+
+        }));
+
     }
+
+    filteredColleges = [...colleges];
 
     renderEverything();
 }
-
 loadData();
-
 // ======================================
 // FORM DATA
 // ======================================

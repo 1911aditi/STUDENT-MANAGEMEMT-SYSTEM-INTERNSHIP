@@ -117,11 +117,49 @@ function saveStudents() {
 }
 
 function loadStudents() {
-  const saved = localStorage.getItem("studentManagementData");
-  if (saved) {
-    students = JSON.parse(saved);
+
+    const dashboard = JSON.parse(
+        localStorage.getItem("studentDashboardData")
+    );
+
+    if (dashboard && dashboard.records) {
+
+        students = dashboard.records.map(student => ({
+
+            id: student.id,
+
+            name: student.studentName,
+
+            gender: student.gender,
+
+            dob: "",
+
+            college: student.college,
+
+            department: student.department,
+
+            branch: student.department,
+
+            semester: student.year,
+
+            guide: student.guide,
+
+            project: "",
+
+            batch: "",
+
+            phone: "",
+
+            email: "",
+
+            address: ""
+
+        }));
+
+    }
+
     filteredStudents = [...students];
-  }
+
 }
 
 function setDefaultStudentId() {
