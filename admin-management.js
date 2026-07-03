@@ -1,6 +1,7 @@
 let administrators = [];
 let filteredAdministrators = [];
 let editAdminId = null;
+let currentRequestID = "";
 
 const defaultAdministrators = [
   {
@@ -347,6 +348,19 @@ function openResetPassword(adminId) {
 
   openModal("resetPasswordModal");
 }
+function openResetRequest(username, requestID) {
+
+    currentRequestID = requestID;
+
+    const admin = administrators.find(a => a.Username === username);
+
+    if (!admin) {
+        alert("Administrator not found.");
+        return;
+    }
+
+    openResetPassword(admin.AdminID);
+}
 
 document.getElementById("resetPasswordForm").addEventListener("submit", function (e) {
   e.preventDefault();
@@ -372,10 +386,23 @@ document.getElementById("resetPasswordForm").addEventListener("submit", function
     return;
   }
 
-  administrators[index].Password = newPassword;
-  saveAdministrators();
+    administrators[index].Password = newPassword;
+    saveAdministrators();
 
-  alert("Password reset successfully.");
+    const requests = getPasswordResetRequests();
+
+    const request = requests.find(r => r.RequestID === currentRequestID);
+    if (request) {
+      request.Status = "Completed";
+
+      localStorage.setItem(
+          "passwordResetRequests",
+          JSON.stringify(requests)
+      );
+  }
+
+  alert("Password reset successfully.\n\nPlease tell the Administrator the new password personally.");
+  renderPasswordRequests();
   closeModal("resetPasswordModal");
 });
 
@@ -469,6 +496,48 @@ function renderAll() {
   renderStats();
   renderAdminTable(filteredAdministrators);
 }
+function renderPasswordRequests() {
+
+    const tbody = document.getElementById("passwordRequestTable");
+
+    const requests = getPasswordResetRequests();
+
+    tbody.innerHTML = "";
+
+    requests.forEach(request => {
+
+        tbody.innerHTML += `
+
+        <tr>
+
+            <td>${request.RequestID}</td>
+            <td>${request.Username}</td>
+            <td>${request.Reason}</td>
+            <td>${request.RequestedOn}</td>
+            <td>${request.Status}</td>
+
+            <td>
+
+                ${request.Status === "Pending"
+
+                ? `<button class="primary-btn"
+                    onclick="openResetRequest('${request.Username}','${request.RequestID}')">
+
+                    Reset Password
+
+                   </button>`
+
+                : "Completed"}
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
 
 function init() {
   requirePageAccess();
@@ -488,6 +557,7 @@ function init() {
   setInterval(updateDateTime, 60000);
 
   renderAll();
+  renderPasswordRequests();
 }
 
 init();

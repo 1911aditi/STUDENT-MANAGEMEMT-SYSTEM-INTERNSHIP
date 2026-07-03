@@ -151,3 +151,25 @@
     width: 100%;
   }
 }
+#passwordRequestTable button{
+
+    padding:8px 15px;
+
+}
+
+.completed-status{
+
+    color:green;
+
+    font-weight:bold;
+
+}
+
+.pending-status{
+
+    color:#e67e22;
+
+    font-weight:bold;
+
+}
+
