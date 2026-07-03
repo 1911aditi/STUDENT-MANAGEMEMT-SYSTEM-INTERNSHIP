@@ -41,7 +41,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <nav class="menu">
 
-<a href="index_demo.html" class="menu-item">Dashboard</a>
+<a href="index.html" class="menu-item">Dashboard</a>
 <a href="students.html" class="menu-item">Students</a>
 <a href="college.html" class="menu-item">Colleges</a>
 <a href="guide.html" class="menu-item active">Guides</a>
@@ -49,8 +49,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <a href="report.html" class="menu-item">Reports</a>
 <a href="export.html" class="menu-item">Export Data</a>
 <a href="settings.html" class="menu-item">Settings</a>
+<a href="admin-management.html" class="menu-item" data-super-admin-only>Admin Management</a>
+
 <a href="backup.html" class="menu-item">Backup</a>
 <a href="about.html" class="menu-item">About</a>
+<a href="#" class="menu-item" onclick="logout()">Logout</a>
+
 
 </nav>
 
@@ -282,7 +286,7 @@ Departments
 
 </div>
 
-<div class="stat-value">
+<div class="stat-value" id="totalDepartments">
 
 12
 
@@ -644,7 +648,9 @@ RIGHT SIDEBAR
 </main>
 
 </div>
+<script src="auth.js"></script>
 <script src="common.js"></script>
+<script src="dataManager.js"></script>
 <script src="guide.js"></script>
 
 </body>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Management</title>
+  <link rel="stylesheet" href="common.css" />
+  <link rel="stylesheet" href="student.css">
+  
+  <link rel="stylesheet" href="admin-management.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div>
+        <div class="logo">
+          <div class="logo-icon">🎓</div>
+          <div>
+            <h2>Students Dashboard</h2>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <a href="index.html" class="menu-item">Dashboard</a>
+          <a href="student.html" class="menu-item">Students</a>
+          <a href="college.html" class="menu-item">Colleges</a>
+          <a href="guide.html" class="menu-item">Guides</a>
+          <a href="department.html" class="menu-item">Department</a>
+          <a href="report.html" class="menu-item">Reports</a>
+          <a href="export.html" class="menu-item">Export Data</a>
+          <a href="settings.html" class="menu-item">Settings</a>
+          <a href="admin-management.html" class="menu-item active" data-super-admin-only>Admin Management</a>
+          <a href="backup.html" class="menu-item">Backup</a>
+          <a href="about.html" class="menu-item">About</a>
+          <a href="#" class="menu-item" onclick="logout()">Logout</a>
+        </nav>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-avatar">👤</div>
+        <div>
+          <div class="admin-name">Admin User</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn" id="toggleSidebar">☰</button>
+          <div>
+            <h1 class="page-title">Admin Management</h1>
+            <div class="breadcrumb">Dashboard &gt; Admin Management</div>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="date-box" id="currentDateTime"></div>
+        </div>
+      </header>
+
+      <!-- Stats -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div>
+            <div class="stat-title">Total Administrators</div>
+            <div class="stat-value" id="totalAdmins">0</div>
+            <div class="stat-sub">All admin accounts</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">🟢</div>
+          <div>
+            <div class="stat-title">Active Administrators</div>
+            <div class="stat-value" id="activeAdmins">0</div>
+            <div class="stat-sub">Currently enabled</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon pink">⛔</div>
+          <div>
+            <div class="stat-title">Disabled Administrators</div>
+            <div class="stat-value" id="disabledAdmins">0</div>
+            <div class="stat-sub">Inactive accounts</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">🔐</div>
+          <div>
+            <div class="stat-title">Password Reset Requests</div>
+            <div class="stat-value" id="resetRequests">0</div>
+            <div class="stat-sub">Pending requests</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <div class="content-left">
+          <!-- Search -->
+          <section class="card">
+            <div class="card-header">
+              <h3>Search Administrator</h3>
+            </div>
+
+            <form class="admin-search-grid" id="adminSearchForm">
+              <div class="form-group">
+                <label for="searchName">Name</label>
+                <input type="text" id="searchName" placeholder="Enter name" />
+              </div>
+
+              <div class="form-group">
+                <label for="searchUsername">Username</label>
+                <input type="text" id="searchUsername" placeholder="Enter username" />
+              </div>
+
+              <div class="form-group">
+                <label for="searchStatus">Status</label>
+                <select id="searchStatus">
+                  <option value="">All Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+
+              <div class="search-actions">
+                <button type="submit" class="primary-btn">Search</button>
+                <button type="button" class="secondary-btn" id="resetSearch">Reset</button>
+              </div>
+            </form>
+          </section>
+
+          <!-- Table -->
+          <section class="card">
+            <div class="card-header card-header-row">
+              <h3>Administrator Table</h3>
+              <button class="primary-btn" id="addAdminBtn">+ Add Administrator</button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Admin ID</th>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Login</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="table-footer">
+              <div id="tableInfo">Showing 0 of 0 entries</div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add/Edit Administrator Popup -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-box modal-large">
+      <div class="modal-header">
+        <h2 id="adminModalTitle">Add Administrator</h2>
+        <button type="button" class="close-modal" data-close="adminModal">×</button>
+      </div>
+
+      <form id="adminForm" class="popup-form">
+        <input type="hidden" id="adminId" />
+
+        <div class="form-group">
+          <label for="fullName">Full Name *</label>
+          <input type="text" id="fullName" placeholder="Enter full name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adminUsername">Username *</label>
+          <input type="text" id="adminUsername" placeholder="Enter username" required />
+        </div>
+
+        <div class="form-group password-field">
+          <label for="adminPassword">Password *</label>
+          <input type="password" id="adminPassword" placeholder="Enter password" />
+        </div>
+
+        <div class="form-group password-field">
+          <label for="confirmPassword">Confirm Password *</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm password" />
+        </div>
+
+        <div class="form-group">
+          <label for="adminEmail">Email</label>
+          <input type="email" id="adminEmail" placeholder="Enter email" />
+        </div>
+
+        <div class="form-group">
+          <label for="adminPhone">Phone Number</label>
+          <input type="text" id="adminPhone" placeholder="Enter phone number" />
+        </div>
+
+        <div class="form-group">
+          <label for="adminRole">Role</label>
+          <select id="adminRole" required>
+            <option value="Administrator">Administrator</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="adminStatus">Status</label>
+          <select id="adminStatus" required>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div class="modal-actions form-group-wide">
+          <button type="submit" class="primary-btn">Save</button>
+          <button type="button" class="secondary-btn" data-close="adminModal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reset Password Popup -->
+  <div class="modal-overlay" id="resetPasswordModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Reset Password</h2>
+        <button type="button" class="close-modal" data-close="resetPasswordModal">×</button>
+      </div>
+
+      <form id="resetPasswordForm">
+        <input type="hidden" id="resetAdminId" />
+
+        <div class="form-group">
+          <label for="resetAdminName">Administrator Name</label>
+          <input type="text" id="resetAdminName" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password *</label>
+          <input type="password" id="newPassword" placeholder="Enter new password" required />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm Password *</label>
+          <input type="password" id="confirmNewPassword" placeholder="Confirm new password" required />
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="primary-btn">Save</button>
+          <button type="button" class="secondary-btn" data-close="resetPasswordModal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="admin-management.js"></script>
+</body>
+</html>

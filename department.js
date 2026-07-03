@@ -92,7 +92,7 @@ minute:"2-digit"
 
 updateDateTime();
 
-setInterval(updateDateTime,1000);
+setInterval(updateDateTime, 60000);
 
 // ============================================
 // SIDEBAR
@@ -118,30 +118,30 @@ document.getElementById("totalDepartments").innerHTML=
 
 departments.length;
 
-let students=0;
+let students = 0;
 
-let faculty=0;
-
-let courses=0;
-
-departments.forEach(d=>{
-
-students+=d.students;
-
-faculty+=d.faculty;
-
-courses+=d.courses;
-
+departments.forEach(d => {
+    students += d.students;
 });
 
-document.getElementById("totalStudents").innerHTML=
+const excelData = getExcelData();
+
+const maleStudents = excelData.filter(s =>
+    (s.Gender || "").trim().toLowerCase() === "male"
+).length;
+
+const femaleStudents = excelData.filter(s =>
+    (s.Gender || "").trim().toLowerCase() === "female"
+).length;
+
+document.getElementById("totalStudents").innerHTML =
 students;
 
-document.getElementById("totalFaculty").innerHTML=
-faculty;
+document.getElementById("maleStudents").innerHTML =
+maleStudents;
 
-document.getElementById("totalCourses").innerHTML=
-courses;
+document.getElementById("femaleStudents").innerHTML =
+femaleStudents;
 
 }
 
@@ -276,6 +276,12 @@ const sortedDepartments = [...departments].sort((a, b) => b.students - a.student
 
             maintainAspectRatio: false,
 
+            layout: {
+    padding: {
+        top: 30
+    }
+},
+
             plugins: {
 
                 // Hide "Students" legend
@@ -286,24 +292,28 @@ const sortedDepartments = [...departments].sort((a, b) => b.students - a.student
                 // Numbers above bars
                 datalabels: {
 
-                    color: "#000",
+    color: "#000",
 
-                    anchor: "end",
+    anchor: "end",
 
-                    align: "top",
+    align: "top",
 
-                    offset: 8,
+    offset: 10,
 
-                    font: {
-                        size: 14,
-                        weight: "bold"
-                    },
+    clip: false,
 
-                    formatter: function(value) {
-                        return value;
-                    }
+    clamp: true,
 
-                }
+    font: {
+        size: 14,
+        weight: "bold"
+    },
+
+    formatter: function(value) {
+        return value;
+    }
+
+}
 
             },
 
@@ -359,10 +369,19 @@ drawStudentChart();
 
 function drawCourseChart(){
 
-    const ctx =
-    document
-    .getElementById("courseChart")
-    .getContext("2d");
+    const excelData = getExcelData();
+
+    const male = excelData.filter(s =>
+        (s.Gender || "").trim().toLowerCase() === "male"
+    ).length;
+
+    const female = excelData.filter(s =>
+        (s.Gender || "").trim().toLowerCase() === "female"
+    ).length;
+
+    const ctx = document
+        .getElementById("courseChart")
+        .getContext("2d");
 
     if(courseChart)
         courseChart.destroy();
@@ -373,19 +392,15 @@ function drawCourseChart(){
 
         data:{
 
-            labels:departments.map(d=>d.name),
+            labels:["Male","Female"],
 
             datasets:[{
 
-                data:departments.map(d=>d.courses),
+                data:[male,female],
 
                 backgroundColor:[
                     "#2563eb",
-                    "#22c55e",
-                    "#f59e0b",
-                    "#7c3aed",
-                    "#ef4444",
-                    "#06b6d4"
+                    "#ec4899"
                 ],
 
                 borderColor:"#ffffff",
@@ -407,22 +422,7 @@ function drawCourseChart(){
             plugins:{
 
                 legend:{
-
-                    position:"bottom",
-
-                    labels:{
-
-                        padding:20,
-
-                        boxWidth:16,
-
-                        font:{
-                            size:13,
-                            weight:"bold"
-                        }
-
-                    }
-
+                    position:"bottom"
                 },
 
                 datalabels:{
@@ -452,15 +452,51 @@ drawCourseChart();
 
 function loadData(){
 
-    const data = localStorage.getItem("departmentData");
+    const excelData = getExcelData();
 
-    if(data){
-
-        departments = JSON.parse(data);
+    if (!excelData || excelData.length === 0) {
 
         filteredDepartments = [...departments];
+        renderEverything();
+        return;
 
     }
+
+    const departmentMap = {};
+
+    excelData.forEach(student => {
+
+        const dept = student.Branch;
+
+        if (!departmentMap[dept]) {
+
+            departmentMap[dept] = {
+
+                id: "DEP" + String(Object.keys(departmentMap).length + 1).padStart(3, "0"),
+
+                name: dept,
+
+                faculty: 0,
+
+                students: 0,
+
+                courses: 0,
+
+                status: "Active"
+
+            };
+
+        }
+
+        departmentMap[dept].students++;
+
+    });
+
+    departments = Object.values(departmentMap);
+
+    filteredDepartments = [...departments];
+
+    renderEverything();
 
 }
 

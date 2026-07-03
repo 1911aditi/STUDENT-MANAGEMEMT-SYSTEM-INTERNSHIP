@@ -1,4 +1,4 @@
-let excelData = [];
+let excelData = getExcelData();
 let dashboardData = {
   totalStudents: 2358,
   totalColleges: 28,
@@ -77,6 +77,68 @@ let collegeChart;
 let guideChart;
 let departmentChart;
 let yearChart;
+
+function buildDashboardFromExcel() {
+
+    const data = getExcelData();
+
+    if (!data || data.length === 0)
+        return;
+
+    dashboardData.records = [];
+    dashboardData.colleges = {};
+    dashboardData.guides = {};
+    dashboardData.departments = {};
+    dashboardData.genders = {};
+
+    dashboardData.totalStudents = data.length;
+    dashboardData.totalColleges = 0;
+    dashboardData.totalGuides = 0;
+    dashboardData.totalDepartments = 0;
+
+    data.forEach(student => {
+
+    dashboardData.records.push({
+    id: student.Student_ID,
+    studentName: student.Student_Name,
+    gender: student.Gender ? student.Gender.trim() : "",
+    college: student.College,
+    department: student.Branch,
+    guide: student.Guide,
+    year: "-",
+    addedOn: "Excel"
+});
+
+        if (!dashboardData.colleges[student.College]) {
+            dashboardData.colleges[student.College] = 0;
+            dashboardData.totalColleges++;
+        }
+
+        dashboardData.colleges[student.College]++;
+
+        if (!dashboardData.guides[student.Guide]) {
+            dashboardData.guides[student.Guide] = 0;
+            dashboardData.totalGuides++;
+        }
+
+        dashboardData.guides[student.Guide]++;
+
+        if (!dashboardData.departments[student.Branch]) {
+            dashboardData.departments[student.Branch] = 0;
+            dashboardData.totalDepartments++;
+        }
+
+        dashboardData.departments[student.Branch]++;
+
+        const gender = (student.Gender || "").trim();
+
+        if (!dashboardData.genders[gender])
+            dashboardData.genders[gender] = 0;
+
+        dashboardData.genders[gender]++;
+    });
+
+}
 
 function formatDateTime() {
   const now = new Date();
@@ -270,17 +332,6 @@ function getTodayDate() {
   });
 }
 
-function saveToLocalStorage() {
-  localStorage.setItem("studentDashboardData", JSON.stringify(dashboardData));
-}
-
-function loadFromLocalStorage() {
-  const saved = localStorage.getItem("studentDashboardData");
-  if (saved) {
-    dashboardData = JSON.parse(saved);
-  }
-}
-
 function addStudentRecord(student) {
   dashboardData.totalStudents += 1;
 
@@ -315,12 +366,17 @@ document.getElementById("toggleSidebar").addEventListener("click", function () {
 });
 
 function init() {
-  loadFromLocalStorage();
-  updateDateTime();
-  setInterval(updateDateTime, 1000);
-  updateStats();
-  renderTable();
-  createCharts();
+
+    buildDashboardFromExcel();
+
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+
+    updateStats();
+
+    renderTable();
+
+    createCharts();
 }
 
 init();
@@ -348,6 +404,8 @@ document.getElementById("excelFile").addEventListener("change", function (event)
         const worksheet = workbook.Sheets[sheetName];
 
         excelData = XLSX.utils.sheet_to_json(worksheet);
+
+        saveExcelData(excelData);
 
         console.log(excelData);
 
@@ -378,7 +436,7 @@ excelData.forEach(student => {
     dashboardData.records.push({
         id: student.Student_ID,
         studentName: student.Student_Name,
-        gender:student.Gender,
+        gender: student.Gender ? student.Gender.trim() : "",
         college: student.College,
         department: student.Branch,
         guide: student.Guide,
@@ -423,14 +481,14 @@ excelData.forEach(student => {
 
 
     // Gender Count
-    if (!dashboardData.genders[student.Gender]) {
-    dashboardData.genders[student.Gender] = 0;
-    }
+    // Gender Count
+const gender = (student.Gender || "").trim().toLowerCase();
 
-const gender = student.Gender ? student.Gender.trim() : "";
-
-if (gender === "Male" || gender === "Female") {
-    dashboardData.genders[gender]++;
+if (gender === "male" || gender === "m") {
+    dashboardData.genders["Male"]++;
+}
+else if (gender === "female" || gender === "f") {
+    dashboardData.genders["Female"]++;
 }
 
 });
@@ -440,8 +498,6 @@ updateStats();
 renderTable();
 
 refreshCharts();
-
-saveToLocalStorage();
 
 alert("Excel Loaded Successfully");
 

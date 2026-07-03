@@ -118,9 +118,18 @@ function saveStudents() {
 
 function loadStudents() {
 
-    const dashboard = JSON.parse(
-        localStorage.getItem("studentDashboardData")
-    );
+    const dashboard = {
+    records: getExcelData().map(student => ({
+        id: student.Student_ID,
+        studentName: student.Student_Name,
+        gender: student.Gender,
+        college: student.College,
+        department: student.Branch,
+        guide: student.Guide,
+        year: "-",
+        addedOn: "Excel"
+    }))
+};
 
     if (dashboard && dashboard.records) {
 
@@ -130,7 +139,7 @@ function loadStudents() {
 
             name: student.studentName,
 
-            gender: student.gender,
+            gender: student.gender || "Male",
 
             dob: "",
 
@@ -560,7 +569,7 @@ function renderAll() {
 function init() {
   loadStudents();
   updateDateTime();
-  setInterval(updateDateTime, 1000);
+  setInterval(updateDateTime, 60000);
   setDefaultStudentId();
   renderAll();
 }

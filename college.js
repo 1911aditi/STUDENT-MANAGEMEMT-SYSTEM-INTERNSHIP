@@ -97,7 +97,7 @@ minute:"2-digit"
 
 }
 
-setInterval(updateDateTime,1000);
+setInterval(updateDateTime, 60000);
 
 updateDateTime();
 
@@ -226,7 +226,8 @@ guides+=Number(c.guides);
 
 document.getElementById("studentCount").innerHTML=students;
 
-document.getElementById("guideCount").innerHTML=guides;
+document.getElementById("guideCount").innerHTML =
+new Set(getExcelData().map(s => s.Guide)).size;
 
 }
 
@@ -441,39 +442,70 @@ function saveData() {
 
 function loadData() {
 
-    const dashboard = JSON.parse(
-        localStorage.getItem("studentDashboardData")
-    );
+    const excelData = getExcelData();
 
-    if (dashboard && dashboard.colleges) {
-
-        colleges = Object.keys(dashboard.colleges).map((name, index) => ({
-
-            id: "COL" + String(index + 1).padStart(3, "0"),
-
-            name: name,
-
-            type: "",
-
-            district: "",
-
-            state: "",
-
-            university: "",
-
-            students: dashboard.colleges[name],
-
-            guides: 0,
-
-            departments: 0
-
-        }));
-
+    if (!excelData || excelData.length === 0) {
+        filteredColleges = [...colleges];
+        renderEverything();
+        return;
     }
+
+    const collegeMap = {};
+
+    excelData.forEach(student => {
+
+        const collegeName = student.College;
+
+        if (!collegeMap[collegeName]) {
+
+            collegeMap[collegeName] = {
+
+                id: "COL" + String(Object.keys(collegeMap).length + 1).padStart(3, "0"),
+
+                name: collegeName,
+
+                type: "",
+
+                district: "",
+
+                state: student.State || "",
+
+                university: "",
+
+                students: 0,
+
+                guides: new Set(),
+
+                departments: new Set()
+
+            };
+
+        }
+
+        collegeMap[collegeName].students++;
+
+        if (student.Guide)
+            collegeMap[collegeName].guides.add(student.Guide);
+
+        if (student.Branch)
+            collegeMap[collegeName].departments.add(student.Branch);
+
+    });
+
+    colleges = Object.values(collegeMap).map(college => ({
+
+        ...college,
+
+        guides: college.guides.size,
+
+        departments: college.departments.size
+
+    }));
 
     filteredColleges = [...colleges];
 
     renderEverything();
+
 }
 loadData();
 // ======================================

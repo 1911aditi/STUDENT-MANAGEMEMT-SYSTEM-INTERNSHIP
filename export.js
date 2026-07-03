@@ -111,7 +111,7 @@ minute:"2-digit"
 
 updateDateTime();
 
-setInterval(updateDateTime,1000);
+setInterval(updateDateTime, 60000);
 
 // ============================================
 // SIDEBAR
@@ -138,25 +138,51 @@ document.getElementById("previewTable");
 
 tbody.innerHTML="";
 
-previewData.forEach(item=>{
+const excelData = getExcelData();
 
-tbody.innerHTML+=`
+let dataToShow =
+excelData.length > 0 ? excelData : previewData;
+
+const selectedDepartment =
+document.getElementById("department").value;
+
+const selectedCollege =
+document.getElementById("college").value;
+
+if(selectedDepartment !== "All Departments"){
+
+    dataToShow = dataToShow.filter(
+        s => (s.Branch || s.department) === selectedDepartment
+    );
+
+}
+
+if(selectedCollege !== "All Colleges"){
+
+    dataToShow = dataToShow.filter(
+        s => (s.College || s.college) === selectedCollege
+    );
+
+}
+dataToShow.forEach(item=>{
+
+    tbody.innerHTML += `
 
 <tr>
 
-<td>${item.id}</td>
+<td>${item.Student_ID || item.id}</td>
 
-<td>${item.name}</td>
+<td>${item.Student_Name || item.name}</td>
 
-<td>${item.department}</td>
+<td>${item.Branch || item.department}</td>
 
-<td>${item.college}</td>
+<td>${item.College || item.college}</td>
 
-<td>${item.guide}</td>
+<td>${item.Guide || item.guide}</td>
 
-<td>${item.year}</td>
+<td>${item.Year || item.year || "-"}</td>
 
-<td>${item.status}</td>
+<td>Active</td>
 
 </tr>
 
@@ -218,15 +244,17 @@ document
 
 let csv="ID,Name,Department,College,Guide,Year,Status\n";
 
-previewData.forEach(d=>{
+const data = getExcelData().length > 0 ? getExcelData() : previewData;
 
-csv+=`${d.id},
-${d.name},
-${d.department},
-${d.college},
-${d.guide},
-${d.year},
-${d.status}\n`;
+data.forEach(d=>{
+
+csv += `${d.Student_ID || d.id},
+${d.Student_Name || d.name},
+${d.Branch || d.department},
+${d.College || d.college},
+${d.Guide || d.guide},
+${d.Year || d.year || "-"},
+Active\n`;
 
 });
 
@@ -258,15 +286,17 @@ document
 
 let csv="ID,Name,Department,College,Guide,Year,Status\n";
 
-previewData.forEach(d=>{
+const data = getExcelData().length > 0 ? getExcelData() : previewData;
 
-csv+=`${d.id},
-${d.name},
-${d.department},
-${d.college},
-${d.guide},
-${d.year},
-${d.status}\n`;
+data.forEach(d=>{
+
+csv+=`${d.Student_ID || d.id},
+${d.Student_Name || d.name},
+${d.Branch || d.department},
+${d.College || d.college},
+${d.Guide || d.guide},
+${d.Year || d.year || "-"},
+Active\n`;
 
 });
 
@@ -403,3 +433,49 @@ document.getElementById("monthExports").innerHTML=
 }
 
 updateSummary();
+
+function loadDepartmentDropdown(){
+
+    const select = document.getElementById("department");
+
+    const departments = [...new Set(
+        getExcelData().map(s => s.Branch)
+    )];
+
+    select.innerHTML = "<option>All Departments</option>";
+
+    departments.forEach(dept => {
+
+        select.innerHTML += `<option>${dept}</option>`;
+
+    });
+
+}
+
+loadDepartmentDropdown();
+
+function loadCollegeDropdown(){
+
+    const select = document.getElementById("college");
+
+    const colleges = [...new Set(
+        getExcelData().map(s => s.College)
+    )];
+
+    select.innerHTML = "<option>All Colleges</option>";
+
+    colleges.forEach(college => {
+
+        select.innerHTML += `<option>${college}</option>`;
+
+    });
+
+}
+
+loadCollegeDropdown();
+
+document.getElementById("department")
+.addEventListener("change", renderPreview);
+
+document.getElementById("college")
+.addEventListener("change", renderPreview);

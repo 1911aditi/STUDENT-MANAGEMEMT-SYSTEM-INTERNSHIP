@@ -1,0 +1,153 @@
+.admin-search-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-active {
+  background: #e8fff0;
+  color: #16a34a;
+}
+
+.status-inactive {
+  background: #ffeaf3;
+  color: #dc2626;
+}
+
+.admin-action-cell {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reset-btn {
+  background: #8b5cf6;
+}
+
+.disable-btn {
+  background: #f59e0b;
+}
+
+.enable-btn {
+  background: #22c55e;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 27, 54, 0.68);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.2);
+  animation: popupFade 0.22s ease;
+}
+
+.modal-large {
+  max-width: 820px;
+}
+
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.modal-header h2 {
+  font-size: 22px;
+  color: #111827;
+}
+
+.close-modal {
+  border: none;
+  background: #f3f6fb;
+  color: #111827;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.popup-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.form-group-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 1400px) {
+  .admin-search-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .search-actions {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-search-grid,
+  .popup-form {
+    grid-template-columns: 1fr;
+  }
+
+  .search-actions,
+  .form-group-wide {
+    grid-column: span 1;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}

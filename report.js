@@ -67,6 +67,7 @@ status:"Completed"
 ];
 
 let filteredReports=[...reports];
+let generatedReports = [];
 
 let reportTrendChart;
 let reportTypeChart;
@@ -94,7 +95,7 @@ minute:"2-digit"
 
 updateDateTime();
 
-setInterval(updateDateTime,1000);
+setInterval(updateDateTime, 60000);
 
 // ============================================
 // SIDEBAR
@@ -388,15 +389,65 @@ drawFormatChart();
 
 function loadReports(){
 
-    const data = localStorage.getItem("reportsData");
+    const excelData = getExcelData();
 
-    if(data){
-
-        reports = JSON.parse(data);
-
+    if (!excelData || excelData.length === 0) {
         filteredReports = [...reports];
-
+        renderEverything();
+        return;
     }
+
+    reports = [
+
+        {
+            id: "REP001",
+            name: "Student Report",
+            type: "Student",
+            department: "All",
+            generatedBy: "Admin",
+            date: new Date().toLocaleDateString("en-IN"),
+            format: "CSV",
+            status: "Completed"
+        },
+
+        {
+            id: "REP002",
+            name: "College Report",
+            type: "College",
+            department: "-",
+            generatedBy: "Admin",
+            date: new Date().toLocaleDateString("en-IN"),
+            format: "CSV",
+            status: "Completed"
+        },
+
+        {
+            id: "REP003",
+            name: "Department Report",
+            type: "Department",
+            department: "All",
+            generatedBy: "Admin",
+            date: new Date().toLocaleDateString("en-IN"),
+            format: "CSV",
+            status: "Completed"
+        },
+
+        {
+            id: "REP004",
+            name: "Guide Report",
+            type: "Guide",
+            department: "All",
+            generatedBy: "Admin",
+            date: new Date().toLocaleDateString("en-IN"),
+            format: "CSV",
+            status: "Completed"
+        }
+
+    ];
+
+    filteredReports = [...reports];
+
+    renderEverything();
 
 }
 
@@ -428,28 +479,39 @@ document.querySelector(".search-grid")
     e.preventDefault();
 
     const reportType =
-    document.getElementById("reportType").value;
+document.getElementById("reportType").value;
 
-    const department =
-    document.getElementById("departmentFilter").value;
+const report = {
 
-    filteredReports = reports.filter(r=>{
+    id: "REP" + String(generatedReports.length + 1).padStart(3, "0"),
 
-        const typeMatch =
-        reportType==="All Reports" ||
-        r.type+" Report"===reportType;
+    name: reportType,
 
-        const departmentMatch =
-        department==="All Departments" ||
-        r.department===department;
+    type: reportType.replace(" Report",""),
 
-        return typeMatch && departmentMatch;
+    department:
+    document.getElementById("departmentFilter").value,
+
+    generatedBy: "Admin",
+
+    date: new Date().toLocaleDateString("en-IN"),
+
+    format: "CSV",
+
+    status: "Completed"
+
+};
+
+generatedReports.unshift(report);
+
+filteredReports = [...generatedReports];
+
+renderEverything();
+
 
     });
 
     renderEverything();
-
-});
 
 // ----------------------------
 // Export CSV
@@ -497,11 +559,33 @@ link.click();
 
 function updateStatistics(){
 
-document.getElementById("reportCount").innerHTML=
-reports.length;
+    const excelData = getExcelData();
+
+    // Total Students
+    document.getElementById("studentCount").innerHTML =
+    excelData.length;
+
+    // Total Colleges
+    const colleges = new Set(
+        excelData.map(s => s.College)
+    );
+
+    document.getElementById("collegeCount").innerHTML =
+    colleges.size;
+
+    // Total Guides
+    const guides = new Set(
+        excelData.map(s => s.Guide)
+    );
+
+    document.getElementById("guideCount").innerHTML =
+    guides.size;
+
+    // Reports Generated
+    document.getElementById("reportCount").innerHTML =
+    generatedReports.length;
 
 }
-
 // ----------------------------
 // Refresh Everything
 // ----------------------------

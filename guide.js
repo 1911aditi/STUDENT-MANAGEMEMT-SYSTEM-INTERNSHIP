@@ -99,7 +99,7 @@ minute:"2-digit"
 
 updateDateTime();
 
-setInterval(updateDateTime,1000);
+setInterval(updateDateTime, 60000);
 
 // =========================================
 // AUTO GUIDE ID
@@ -157,6 +157,13 @@ students;
 
 document.getElementById("projectsGuided").innerHTML =
 projects;
+
+const departments = new Set(
+    getExcelData().map(student => student.Branch)
+);
+
+document.getElementById("totalDepartments").innerHTML =
+departments.size;
 
 }
 
@@ -404,18 +411,57 @@ function saveGuides(){
 
 }
 
-function loadGuides(){
+function loadGuides() {
 
-    const data =
-    localStorage.getItem("guideManagementData");
+    const excelData = getExcelData();
 
-    if(data){
-
-        guides = JSON.parse(data);
-
+    if (!excelData || excelData.length === 0) {
         filteredGuides = [...guides];
-
+        renderAll();
+        return;
     }
+
+    const guideMap = {};
+
+    excelData.forEach(student => {
+
+        const guideName = student.Guide;
+
+        if (!guideMap[guideName]) {
+
+            guideMap[guideName] = {
+
+                id: "GUI" + String(Object.keys(guideMap).length + 1).padStart(3, "0"),
+
+                name: guideName,
+
+                department: student.Branch,
+
+                designation: "",
+
+                students: 0,
+
+                projects: 0,
+
+                email: "",
+
+                phone: "",
+
+                status: "Active"
+
+            };
+
+        }
+
+        guideMap[guideName].students++;
+
+    });
+
+    guides = Object.values(guideMap);
+
+    filteredGuides = [...guides];
+
+    renderAll();
 
 }
 

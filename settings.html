@@ -13,14 +13,18 @@
     <aside class="sidebar">
       <div>
         <div class="logo">
-          <div class="logo-icon">🎓</div>
-          <div>
-            <h2>Settings</h2>
-          </div>
+
+    <i class="fa-solid fa-gear logo1"></i>
+
+    <i class="fa-solid fa-wrench logo2"></i>
+
+    <h2>Settings</h2>
+
+</div>
         </div>
 
         <nav class="menu">
-          <a href="index_demo.html" class="menu-item">Dashboard</a>
+          <a href="index.html" class="menu-item">Dashboard</a>
           <a href="student.html" class="menu-item">Students</a>
           <a href="college.html" class="menu-item">Colleges</a>
           <a href="guide.html" class="menu-item">Guides</a>
@@ -28,8 +32,12 @@
           <a href="report.html" class="menu-item">Reports</a>
           <a href="export.html" class="menu-item">Export Data</a>
           <a href="settings.html" class="menu-item active">Settings</a>
+          <a href="admin-management.html" class="menu-item" data-super-admin-only>Admin Management</a>
+
           <a href="backup.html" class="menu-item">Backup</a>
           <a href="about.html" class="menu-item">About</a>
+          <a href="#" class="menu-item" onclick="logout()">Logout</a>
+
         </nav>
       </div>
 
@@ -211,8 +219,10 @@
       </section>
     </main>
   </div>
+  <script src="auth.js"></script>
 
   <script src="common.js"></script>
+  <script src="auth.js"></script>
   <script src="settings.js"></script>
 </body>
 </html>
