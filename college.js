@@ -227,7 +227,7 @@ guides+=Number(c.guides);
 document.getElementById("studentCount").innerHTML=students;
 
 document.getElementById("guideCount").innerHTML =
-new Set(getExcelData().map(s => s.Guide)).size;
+new Set(getExcelData().map(s => s.guide || s.Guide)).size;
 
 }
 
@@ -441,71 +441,48 @@ function saveData() {
 }
 
 function loadData() {
-
-    const excelData = getExcelData();
-
-    if (!excelData || excelData.length === 0) {
-        filteredColleges = [...colleges];
-        renderEverything();
-        return;
-    }
-
-    const collegeMap = {};
-
-    excelData.forEach(student => {
-
-        const collegeName = student.College;
-
-        if (!collegeMap[collegeName]) {
-
-            collegeMap[collegeName] = {
-
-                id: "COL" + String(Object.keys(collegeMap).length + 1).padStart(3, "0"),
-
-                name: collegeName,
-
-                type: "",
-
-                district: "",
-
-                state: student.State || "",
-
-                university: "",
-
-                students: 0,
-
-                guides: new Set(),
-
-                departments: new Set()
-
-            };
-
+    const stored = localStorage.getItem("collegeData");
+    if (stored) {
+        colleges = JSON.parse(stored);
+    } else {
+        const excelData = getExcelData();
+        if (!excelData || excelData.length === 0) {
+            filteredColleges = [...colleges];
+            renderEverything();
+            return;
         }
 
-        collegeMap[collegeName].students++;
+        const collegeMap = {};
+        excelData.forEach(student => {
+            const collegeName = student.college || student.College;
+            if (!collegeName) return;
+            if (!collegeMap[collegeName]) {
+                collegeMap[collegeName] = {
+                    id: "COL" + String(Object.keys(collegeMap).length + 1).padStart(3, "0"),
+                    name: collegeName,
+                    type: student.collegeType || student["College Type"] || "Private",
+                    district: student.district || student.District || "",
+                    state: student.state || student.State || "",
+                    university: "BPUT",
+                    students: 0,
+                    guides: new Set(),
+                    departments: new Set()
+                };
+            }
+            collegeMap[collegeName].students++;
+            if (student.guide || student.Guide) collegeMap[collegeName].guides.add(student.guide || student.Guide);
+            if (student.branch || student.Branch) collegeMap[collegeName].departments.add(student.branch || student.Branch);
+        });
 
-        if (student.Guide)
-            collegeMap[collegeName].guides.add(student.Guide);
-
-        if (student.Branch)
-            collegeMap[collegeName].departments.add(student.Branch);
-
-    });
-
-    colleges = Object.values(collegeMap).map(college => ({
-
-        ...college,
-
-        guides: college.guides.size,
-
-        departments: college.departments.size
-
-    }));
-
+        colleges = Object.values(collegeMap).map(college => ({
+            ...college,
+            guides: college.guides.size,
+            departments: college.departments.size
+        }));
+        saveData();
+    }
     filteredColleges = [...colleges];
-
     renderEverything();
-
 }
 loadData();
 // ======================================

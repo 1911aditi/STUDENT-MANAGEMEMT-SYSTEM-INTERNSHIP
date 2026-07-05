@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="student.css">
   
   <link rel="stylesheet" href="admin-management.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body>
   <div class="app">
@@ -15,11 +16,12 @@
     <aside class="sidebar">
       <div>
         <div class="logo">
-          <div class="logo-icon">🎓</div>
-          <div>
-            <h2>Students Dashboard</h2>
-          </div>
+        <div class="logo-icon">
+          <i class="fa-solid fa-user-shield"></i>
+          <i class="fa-solid fa-key logo-overlay-icon"></i>
         </div>
+        <h2>Admins</h2>
+      </div>
 
         <nav class="menu">
           <a href="index.html" class="menu-item">Dashboard</a>
@@ -34,7 +36,13 @@
           <a href="backup.html" class="menu-item">Backup</a>
           <a href="about.html" class="menu-item">About</a>
           <a href="#" class="menu-item" onclick="logout()">Logout</a>
-        </nav>
+                </nav>
+        <div class="excel-upload-box">
+          <label for="excelFile" class="excel-upload-label">
+            <i class="fa-solid fa-file-excel"></i> <span>Choose Excel File</span>
+          </label>
+          <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+        </div>
       </div>
 
       <div class="admin-card">
@@ -304,9 +312,11 @@
     </div>
   </div>
 
-  <script src="auth.js"></script>
-  <script src="common.js"></script>
+  <script src="auth.js?v=10"></script>
+  <script src="xlsx.full.min.js?v=10"></script>
+  <script src="common.js?v=10"></script>
+  <script src="dataManager.js?v=10"></script>
   
-  <script src="admin-management.js"></script>
+  <script src="admin-management.js?v=10"></script>
 </body>
 </html>

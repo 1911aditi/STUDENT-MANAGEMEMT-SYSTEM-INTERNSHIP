@@ -127,11 +127,11 @@ departments.forEach(d => {
 const excelData = getExcelData();
 
 const maleStudents = excelData.filter(s =>
-    (s.Gender || "").trim().toLowerCase() === "male"
+    (s.gender || s.Gender || "").trim().toLowerCase() === "male"
 ).length;
 
 const femaleStudents = excelData.filter(s =>
-    (s.Gender || "").trim().toLowerCase() === "female"
+    (s.gender || s.Gender || "").trim().toLowerCase() === "female"
 ).length;
 
 document.getElementById("totalStudents").innerHTML =
@@ -372,11 +372,11 @@ function drawCourseChart(){
     const excelData = getExcelData();
 
     const male = excelData.filter(s =>
-        (s.Gender || "").trim().toLowerCase() === "male"
+        (s.gender || s.Gender || "").trim().toLowerCase() === "male"
     ).length;
 
     const female = excelData.filter(s =>
-        (s.Gender || "").trim().toLowerCase() === "female"
+        (s.gender || s.Gender || "").trim().toLowerCase() === "female"
     ).length;
 
     const ctx = document
@@ -451,55 +451,40 @@ drawCourseChart();
 // ----------------------------
 
 function loadData(){
-
-    const excelData = getExcelData();
-
-    if (!excelData || excelData.length === 0) {
-
-        filteredDepartments = [...departments];
-        renderEverything();
-        return;
-
-    }
-
-    const departmentMap = {};
-
-    excelData.forEach(student => {
-
-        const dept = student.Branch;
-
-        if (!departmentMap[dept]) {
-
-            departmentMap[dept] = {
-
-                id: "DEP" + String(Object.keys(departmentMap).length + 1).padStart(3, "0"),
-
-                name: dept,
-
-                faculty: 0,
-
-                students: 0,
-
-                courses: 0,
-
-                status: "Active"
-
-            };
-
+    const stored = localStorage.getItem("departmentData");
+    if (stored) {
+        departments = JSON.parse(stored);
+    } else {
+        const excelData = getExcelData();
+        if (!excelData || excelData.length === 0) {
+            filteredDepartments = [...departments];
+            renderEverything();
+            return;
         }
 
-        departmentMap[dept].students++;
+        const departmentMap = {};
+        excelData.forEach(student => {
+            const dept = student.branch || student.Branch;
+            if (!dept) return;
+            if (!departmentMap[dept]) {
+                departmentMap[dept] = {
+                    id: "DEP" + String(Object.keys(departmentMap).length + 1).padStart(3, "0"),
+                    name: dept,
+                    faculty: 0,
+                    students: 0,
+                    courses: 5,
+                    status: "Active"
+                };
+            }
+            departmentMap[dept].students++;
+        });
 
-    });
-
-    departments = Object.values(departmentMap);
-
+        departments = Object.values(departmentMap);
+        saveData();
+    }
     filteredDepartments = [...departments];
-
     renderEverything();
-
 }
-
 loadData();
 
 // ----------------------------

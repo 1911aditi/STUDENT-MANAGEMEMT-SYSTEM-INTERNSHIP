@@ -130,3 +130,105 @@ table td {
 .dark-mode .admin-card {
   background: rgba(255, 255, 255, 0.06) !important;
 }
+
+/* Excel Upload Styling in Sidebar */
+.excel-upload-box {
+  margin: 15px 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+.excel-upload-box:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--primary-color);
+}
+.excel-upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #d9e3ef;
+  cursor: pointer;
+  margin: 0;
+}
+.excel-upload-label i {
+  color: var(--primary-color);
+  font-size: 16px;
+}
+.excel-upload-box input[type="file"] {
+  display: none;
+}
+.sidebar.collapsed .excel-upload-box {
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+}
+.sidebar.collapsed .excel-upload-label span {
+  display: none;
+}
+.sidebar.collapsed .excel-upload-label {
+  justify-content: center;
+}
+
+/* =========================================
+   SIDEBAR CUSTOM LOGOS
+   ========================================= */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 25px;
+  padding-left: 4px;
+}
+.logo h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  color: white;
+  margin: 0;
+  line-height: 1;
+}
+.logo-icon {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+.logo-icon > i:first-child {
+  font-size: 32px;
+  color: #14b8a6; /* Teal logo color matching backup */
+}
+.logo-overlay-icon {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+  font-size: 14px;
+  color: #22c55e; /* Green overlay color */
+  background: #0d1b36;
+  border-radius: 50%;
+  padding: 2px;
+}
+.spin-anim {
+  animation: common-spin 3s linear infinite;
+}
+@keyframes common-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Collapse styling support */
+.sidebar.collapsed .logo h2 {
+  display: none;
+}
+.sidebar.collapsed .logo {
+  padding-left: 0;
+  justify-content: center;
+}

@@ -117,58 +117,34 @@ function saveStudents() {
 }
 
 function loadStudents() {
-
-    const dashboard = {
-    records: getExcelData().map(student => ({
-        id: student.Student_ID,
-        studentName: student.Student_Name,
-        gender: student.Gender,
-        college: student.College,
-        department: student.Branch,
-        guide: student.Guide,
-        year: "-",
-        addedOn: "Excel"
-    }))
-};
-
-    if (dashboard && dashboard.records) {
-
-        students = dashboard.records.map(student => ({
-
-            id: student.id,
-
-            name: student.studentName,
-
-            gender: student.gender || "Male",
-
-            dob: "",
-
-            college: student.college,
-
-            department: student.department,
-
-            branch: student.department,
-
-            semester: student.year,
-
-            guide: student.guide,
-
-            project: "",
-
-            batch: "",
-
-            phone: "",
-
-            email: "",
-
-            address: ""
-
-        }));
-
+  const stored = localStorage.getItem("studentManagementData");
+  if (stored) {
+    students = JSON.parse(stored);
+  } else {
+    const excel = getExcelData();
+    if (excel && excel.length > 0) {
+      students = excel.map((student, idx) => ({
+        id: student.Student_ID || student["Student ID"] || ("STU" + (1259 + idx)),
+        name: student.Student_Name || student.Name || "Unknown",
+        gender: student.Gender || "Male",
+        dob: student.DOB || "",
+        college: student.College || "Unknown College",
+        department: student.Branch || "General",
+        branch: student.Branch || "General",
+        semester: student.Semester || student.Year || "1st Year",
+        guide: student.Guide || "No Guide",
+        project: student.Project || "",
+        batch: student.Batch || "Batch-2 2026",
+        phone: student.Phone || "",
+        email: student.Email || "",
+        address: (student.District ? student.District + ", " : "") + (student.State || "")
+      }));
+      saveStudents();
+    } else {
+      saveStudents();
     }
-
-    filteredStudents = [...students];
-
+  }
+  filteredStudents = [...students];
 }
 
 function setDefaultStudentId() {

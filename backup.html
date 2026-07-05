@@ -30,13 +30,12 @@ SIDEBAR
 <aside class="sidebar">
 
 <div class="logo">
-    <div class="logo-icon">
-        <i class="fa-solid fa-database"></i>
-        <i class="fa-solid fa-rotate-right sync-icon"></i>
-    </div>
-
-    <h2>Backup</h2>
-</div>
+        <div class="logo-icon">
+          <i class="fa-solid fa-database"></i>
+          <i class="fa-solid fa-rotate-right logo-overlay-icon spin-anim"></i>
+        </div>
+        <h2>Backup</h2>
+      </div>
 
     <nav class="menu">
             <a href="index.html" class="menu-item ">Dashboard</a>
@@ -53,7 +52,13 @@ SIDEBAR
             <a href="about.html" class="menu-item">About</a>
             <a href="#" class="menu-item" onclick="logout()">Logout</a>
 
-    </nav>
+            </nav>
+        <div class="excel-upload-box">
+          <label for="excelFile" class="excel-upload-label">
+            <i class="fa-solid fa-file-excel"></i> <span>Choose Excel File</span>
+          </label>
+          <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+        </div>
 
 <div class="admin-card">
 
@@ -97,27 +102,17 @@ MAIN
 
 <div class="topbar-right">
 
-<select>
+<select class="batch-filter">
 
-<option>Batch-2 2026</option>
+<option>Batch-1 2025</option>
+
+<option selected>Batch-2 2026</option>
+
+<option>Batch-3 2027</option>
 
 </select>
 
-<div class="notification">
-
-<i class="fa-solid fa-bell"></i>
-
-<span>3</span>
-
-</div>
-
-<div class="profile">
-
-<i class="fa-solid fa-user-circle"></i>
-
-<span>Admin User</span>
-
-</div>
+<div id="currentDateTime" class="date-box"></div>
 
 </div>
 
@@ -284,6 +279,11 @@ BACKUP ACTIONS
             Print
 
         </button>
+
+        <label for="restoreFileInput" class="primary-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; background: #8b5cf6;">
+            <i class="fa-solid fa-upload"></i> Restore Backup File
+        </label>
+        <input type="file" id="restoreFileInput" accept=".json" style="display: none;">
 
     </div>
 
@@ -470,10 +470,12 @@ BACKUP LIST
 </div>
 
 </div>
-<script src="auth.js"></script>
-<script src="common.js"></script>
-<script src="auth.js"></script>
-<script src="backup.js"></script>
+<script src="auth.js?v=10"></script>
+<script src="xlsx.full.min.js?v=10"></script>
+  <script src="common.js?v=10"></script>
+  <script src="dataManager.js?v=10"></script>
+<script src="auth.js?v=10"></script>
+<script src="backup.js?v=10"></script>
 
 </body>
 

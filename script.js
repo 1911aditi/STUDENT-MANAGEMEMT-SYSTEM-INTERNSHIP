@@ -79,65 +79,74 @@ let departmentChart;
 let yearChart;
 
 function buildDashboardFromExcel() {
-
-    const data = getExcelData();
-
-    if (!data || data.length === 0)
-        return;
+    let studentsList = JSON.parse(localStorage.getItem("studentManagementData"));
+    if (!studentsList || studentsList.length === 0) {
+        const data = getExcelData();
+        if (!data || data.length === 0) return;
+        studentsList = data.map((student, idx) => ({
+            id: student.Student_ID || student["Student ID"] || ("STU" + (1259 + idx)),
+            name: student.Student_Name || student.Name || "Unknown",
+            gender: student.Gender || "Male",
+            dob: student.DOB || "",
+            college: student.College || "Unknown College",
+            department: student.Branch || "General",
+            branch: student.Branch || "General",
+            semester: student.Semester || student.Year || "1st Year",
+            guide: student.Guide || "No Guide",
+            project: student.Project || "",
+            batch: student.Batch || "Batch-2 2026",
+            phone: student.Phone || "",
+            email: student.Email || "",
+            address: (student.District ? student.District + ", " : "") + (student.State || "")
+        }));
+        localStorage.setItem("studentManagementData", JSON.stringify(studentsList));
+    }
 
     dashboardData.records = [];
     dashboardData.colleges = {};
     dashboardData.guides = {};
     dashboardData.departments = {};
-    dashboardData.genders = {};
+    dashboardData.genders = { "Male": 0, "Female": 0 };
 
-    dashboardData.totalStudents = data.length;
-    dashboardData.totalColleges = 0;
-    dashboardData.totalGuides = 0;
-    dashboardData.totalDepartments = 0;
+    dashboardData.totalStudents = studentsList.length;
 
-    data.forEach(student => {
+    studentsList.forEach(student => {
+        dashboardData.records.push({
+            id: student.id,
+            studentName: student.name,
+            gender: student.gender,
+            college: student.college,
+            department: student.department,
+            guide: student.guide,
+            year: student.semester || "-",
+            addedOn: student.batch || "Excel"
+        });
 
-    dashboardData.records.push({
-    id: student.Student_ID,
-    studentName: student.Student_Name,
-    gender: student.Gender ? student.Gender.trim() : "",
-    college: student.College,
-    department: student.Branch,
-    guide: student.Guide,
-    year: "-",
-    addedOn: "Excel"
-});
-
-        if (!dashboardData.colleges[student.College]) {
-            dashboardData.colleges[student.College] = 0;
-            dashboardData.totalColleges++;
+        if (!dashboardData.colleges[student.college]) {
+            dashboardData.colleges[student.college] = 0;
         }
+        dashboardData.colleges[student.college]++;
 
-        dashboardData.colleges[student.College]++;
-
-        if (!dashboardData.guides[student.Guide]) {
-            dashboardData.guides[student.Guide] = 0;
-            dashboardData.totalGuides++;
+        if (!dashboardData.guides[student.guide]) {
+            dashboardData.guides[student.guide] = 0;
         }
+        dashboardData.guides[student.guide]++;
 
-        dashboardData.guides[student.Guide]++;
-
-        if (!dashboardData.departments[student.Branch]) {
-            dashboardData.departments[student.Branch] = 0;
-            dashboardData.totalDepartments++;
+        if (!dashboardData.departments[student.department]) {
+            dashboardData.departments[student.department] = 0;
         }
+        dashboardData.departments[student.department]++;
 
-        dashboardData.departments[student.Branch]++;
-
-        const gender = (student.Gender || "").trim();
-
-        if (!dashboardData.genders[gender])
+        const gender = (student.gender || "Male").trim();
+        if (!dashboardData.genders[gender]) {
             dashboardData.genders[gender] = 0;
-
+        }
         dashboardData.genders[gender]++;
     });
 
+    dashboardData.totalColleges = Object.keys(dashboardData.colleges).length;
+    dashboardData.totalGuides = Object.keys(dashboardData.guides).length;
+    dashboardData.totalDepartments = Object.keys(dashboardData.departments).length;
 }
 
 function formatDateTime() {
@@ -187,20 +196,20 @@ function createCharts() {
   const deptCtx = document.getElementById("departmentChart").getContext("2d");
   const yearCtx = document.getElementById("yearChart").getContext("2d");
 
+  const colors20 = [
+    "#2c67f2", "#35c885", "#8b5cf6", "#ffb020", "#ff6b6b", 
+    "#00d2fc", "#e84393", "#ffeaa7", "#55efc4", "#81ecec", 
+    "#74b9ff", "#a29bfe", "#fab1a0", "#ff7675", "#fd79a8", 
+    "#fdcb6e", "#e17055", "#d63031", "#b2bec3", "#6c5ce7"
+  ];
+
   collegeChart = new Chart(collegeCtx, {
     type: "doughnut",
     data: {
       labels: Object.keys(dashboardData.colleges),
       datasets: [{
         data: Object.values(dashboardData.colleges),
-        backgroundColor: [
-          "#2c67f2",
-          "#35c885",
-          "#8b5cf6",
-          "#ffb020",
-          "#ff6b6b",
-          "#94a3b8"
-        ],
+        backgroundColor: colors20.slice(0, Object.keys(dashboardData.colleges).length),
         borderWidth: 0
       }]
     },
@@ -249,15 +258,7 @@ function createCharts() {
       datasets: [{
         label: "Students",
         data: Object.values(dashboardData.departments),
-        backgroundColor: [
-          "#2c67f2",
-          "#35c885",
-          "#ffb020",
-          "#8b5cf6",
-          "#ff7a45",
-          "#22b8cf",
-          "#94a3b8"
-        ],
+        backgroundColor: colors20.slice(0, Object.keys(dashboardData.departments).length),
         borderRadius: 6
       }]
     },
@@ -381,128 +382,4 @@ function init() {
 
 init();
 
-document.getElementById("excelFile").addEventListener("change", function (event) {
-
-    const file = event.target.files[0];
-
-    if (!file) {
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-
-        const data = new Uint8Array(e.target.result);
-
-        const workbook = XLSX.read(data, {
-            type: "array"
-        });
-
-        const sheetName = workbook.SheetNames[0];
-
-        const worksheet = workbook.Sheets[sheetName];
-
-        excelData = XLSX.utils.sheet_to_json(worksheet);
-
-        saveExcelData(excelData);
-
-        console.log(excelData);
-
-        dashboardData.records = [];
-
-dashboardData.colleges = {};
-
-dashboardData.guides = {};
-
-dashboardData.departments = {};
-
-dashboardData.genders = {
-    Male: 0,
-    Female: 0
-};
-
-dashboardData.totalStudents = excelData.length;
-
-dashboardData.totalColleges = 0;
-
-dashboardData.totalGuides = 0;
-
-dashboardData.totalDepartments = 0;
-
-excelData.forEach(student => {
-  console.log("students")
-
-    dashboardData.records.push({
-        id: student.Student_ID,
-        studentName: student.Student_Name,
-        gender: student.Gender ? student.Gender.trim() : "",
-        college: student.College,
-        department: student.Branch,
-        guide: student.Guide,
-        state:student.State,
-        year: "-",
-        addedOn: "Excel"
-    });
-    // Odisha & Outside Odisha Count
-    if (!dashboardData.states) {
-        dashboardData.states = {
-            Odisha: 0,
-            Outside: 0
-        };
-    }
-
-    if (student.State === "Odisha") {
-        dashboardData.states.Odisha++;
-    } else {
-        dashboardData.states.Outside++;
-    }
-
-    // College Count
-    if (!dashboardData.colleges[student.College]) {
-        dashboardData.colleges[student.College] = 0;
-        dashboardData.totalColleges++;
-    }
-    dashboardData.colleges[student.College]++;
-
-    // Guide Count
-    if (!dashboardData.guides[student.Guide]) {
-        dashboardData.guides[student.Guide] = 0;
-        dashboardData.totalGuides++;
-    }
-    dashboardData.guides[student.Guide]++;
-
-    // Department Count
-    if (!dashboardData.departments[student.Branch]) {
-        dashboardData.departments[student.Branch] = 0;
-        dashboardData.totalDepartments++;
-    }
-    dashboardData.departments[student.Branch]++;
-
-
-    // Gender Count
-    // Gender Count
-const gender = (student.Gender || "").trim().toLowerCase();
-
-if (gender === "male" || gender === "m") {
-    dashboardData.genders["Male"]++;
-}
-else if (gender === "female" || gender === "f") {
-    dashboardData.genders["Female"]++;
-}
-
-});
-
-updateStats();
-
-renderTable();
-
-refreshCharts();
-
-alert("Excel Loaded Successfully");
-
-};
-
-reader.readAsArrayBuffer(file);
-
-});
+// Redundant Excel File listener removed - now handled globally in common.js

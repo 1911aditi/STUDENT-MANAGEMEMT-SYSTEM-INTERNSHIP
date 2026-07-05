@@ -15,7 +15,7 @@
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="chart.umd.js?v=10"></script>
 
 </head>
 
@@ -28,16 +28,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <div>
 
 <div class="logo">
-
-<div class="logo-icon">🎓</div>
-
-<div>
-
-<h2>Guides Dashboard</h2>
-
-</div>
-
-</div>
+        <div class="logo-icon">
+          <i class="fa-solid fa-user-tie"></i>
+          <i class="fa-solid fa-star logo-overlay-icon"></i>
+        </div>
+        <h2>Guides</h2>
+      </div>
 
 <nav class="menu">
 
@@ -56,7 +52,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <a href="#" class="menu-item" onclick="logout()">Logout</a>
 
 
-</nav>
+        </nav>
+        <div class="excel-upload-box">
+          <label for="excelFile" class="excel-upload-label">
+            <i class="fa-solid fa-file-excel"></i> <span>Choose Excel File</span>
+          </label>
+          <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+        </div>
 
 </div>
 
@@ -648,10 +650,11 @@ RIGHT SIDEBAR
 </main>
 
 </div>
-<script src="auth.js"></script>
-<script src="common.js"></script>
-<script src="dataManager.js"></script>
-<script src="guide.js"></script>
+<script src="auth.js?v=10"></script>
+<script src="xlsx.full.min.js?v=10"></script>
+  <script src="common.js?v=10"></script>
+<script src="dataManager.js?v=10"></script>
+<script src="guide.js?v=10"></script>
 
 </body>
 

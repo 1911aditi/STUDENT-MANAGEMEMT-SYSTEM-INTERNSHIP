@@ -159,7 +159,7 @@ document.getElementById("projectsGuided").innerHTML =
 projects;
 
 const departments = new Set(
-    getExcelData().map(student => student.Branch)
+    getExcelData().map(student => student.branch || student.Branch)
 );
 
 document.getElementById("totalDepartments").innerHTML =
@@ -203,13 +203,9 @@ tbody.innerHTML += `
 <td>${guide.phone}</td>
 
 <td>
-
-<span class="badge ${guide.status.toLowerCase()}">
-
-${guide.status}
-
+<span class="badge ${(guide.status || "Active").toLowerCase()}">
+${guide.status || "Active"}
 </span>
-
 </td>
 
 <td>
@@ -412,59 +408,44 @@ function saveGuides(){
 }
 
 function loadGuides() {
-
-    const excelData = getExcelData();
-
-    if (!excelData || excelData.length === 0) {
-        filteredGuides = [...guides];
-        renderAll();
-        return;
-    }
-
-    const guideMap = {};
-
-    excelData.forEach(student => {
-
-        const guideName = student.Guide;
-
-        if (!guideMap[guideName]) {
-
-            guideMap[guideName] = {
-
-                id: "GUI" + String(Object.keys(guideMap).length + 1).padStart(3, "0"),
-
-                name: guideName,
-
-                department: student.Branch,
-
-                designation: "",
-
-                students: 0,
-
-                projects: 0,
-
-                email: "",
-
-                phone: "",
-
-                status: "Active"
-
-            };
-
+    const stored = localStorage.getItem("guideManagementData");
+    if (stored) {
+        guides = JSON.parse(stored);
+    } else {
+        const excelData = getExcelData();
+        if (!excelData || excelData.length === 0) {
+            filteredGuides = [...guides];
+            renderAll();
+            return;
         }
 
-        guideMap[guideName].students++;
+        const guideMap = {};
+        excelData.forEach(student => {
+            const guideName = student.guide || student.Guide;
+            if (!guideName) return;
+            if (!guideMap[guideName]) {
+                guideMap[guideName] = {
+                    id: "GUI" + String(Object.keys(guideMap).length + 1).padStart(3, "0"),
+                    name: guideName,
+                    department: student.branch || student.Branch || student.department || "General",
+                    designation: "Professor",
+                    students: 0,
+                    projects: 0,
+                    email: guideName.toLowerCase().replace(/[^a-z]/g, "") + "@college.edu",
+                    phone: "98765" + String(Math.floor(10000 + Math.random() * 90000)),
+                    status: student.guideStatus || student["Guide Status"] || "Active"
+                };
+            }
+            guideMap[guideName].students++;
+            if (student.project || student.Project) guideMap[guideName].projects++;
+        });
 
-    });
-
-    guides = Object.values(guideMap);
-
+        guides = Object.values(guideMap);
+        saveGuides();
+    }
     filteredGuides = [...guides];
-
     renderAll();
-
 }
-
 loadGuides();
 
 // ------------------------------
@@ -490,26 +471,18 @@ renderAll();
 // ------------------------------
 
 function getGuideForm(){
-
-    return{
-
-        id:guideId.value,
-        name:guideName.value,
-        department:department.value,
-        designation:designation.value,
-
-        students:Math.floor(Math.random()*15)+18,
-
-        projects:Math.floor(Math.random()*10)+8,
-
-        email:email.value,
-
-        phone:phone.value,
-
-        status:status.value
-
+    const existing = editIndex !== null ? guides[editIndex] : null;
+    return {
+        id: document.getElementById("guideId").value,
+        name: document.getElementById("guideName").value,
+        department: document.getElementById("department").value,
+        designation: document.getElementById("designation").value,
+        students: existing ? existing.students : (Math.floor(Math.random() * 15) + 18),
+        projects: existing ? existing.projects : (Math.floor(Math.random() * 10) + 8),
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        status: document.getElementById("status").value
     };
-
 }
 
 // ------------------------------
@@ -560,25 +533,15 @@ setGuideID();
 // ------------------------------
 
 function editGuide(index){
-
-editIndex=index;
-
-const g=guides[index];
-
-guideId.value=g.id;
-
-guideName.value=g.name;
-
-department.value=g.department;
-
-designation.value=g.designation;
-
-email.value=g.email;
-
-phone.value=g.phone;
-
-status.value=g.status;
-
+    editIndex = index;
+    const g = guides[index];
+    document.getElementById("guideId").value = g.id;
+    document.getElementById("guideName").value = g.name;
+    document.getElementById("department").value = g.department;
+    document.getElementById("designation").value = g.designation;
+    document.getElementById("email").value = g.email;
+    document.getElementById("phone").value = g.phone;
+    document.getElementById("status").value = g.status;
 }
 
 // ------------------------------

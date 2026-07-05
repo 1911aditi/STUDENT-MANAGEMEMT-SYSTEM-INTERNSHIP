@@ -132,64 +132,43 @@ document
 // ============================================
 
 function renderPreview(){
+    const tbody = document.getElementById("previewTable");
+    tbody.innerHTML = "";
 
-const tbody=
-document.getElementById("previewTable");
+    const excelData = getExcelData();
+    let dataToShow = excelData.length > 0 ? excelData : previewData;
 
-tbody.innerHTML="";
+    const selectedDepartment = document.getElementById("department").value;
+    const selectedCollege = document.getElementById("college").value;
 
-const excelData = getExcelData();
+    if (selectedDepartment !== "All Departments") {
+        dataToShow = dataToShow.filter(
+            s => (s.branch || s.Branch || s.department) === selectedDepartment
+        );
+    }
 
-let dataToShow =
-excelData.length > 0 ? excelData : previewData;
+    if (selectedCollege !== "All Colleges") {
+        dataToShow = dataToShow.filter(
+            s => (s.college || s.College) === selectedCollege
+        );
+    }
 
-const selectedDepartment =
-document.getElementById("department").value;
-
-const selectedCollege =
-document.getElementById("college").value;
-
-if(selectedDepartment !== "All Departments"){
-
-    dataToShow = dataToShow.filter(
-        s => (s.Branch || s.department) === selectedDepartment
-    );
-
-}
-
-if(selectedCollege !== "All Colleges"){
-
-    dataToShow = dataToShow.filter(
-        s => (s.College || s.college) === selectedCollege
-    );
-
-}
-dataToShow.forEach(item=>{
-
-    tbody.innerHTML += `
-
-<tr>
-
-<td>${item.Student_ID || item.id}</td>
-
-<td>${item.Student_Name || item.name}</td>
-
-<td>${item.Branch || item.department}</td>
-
-<td>${item.College || item.college}</td>
-
-<td>${item.Guide || item.guide}</td>
-
-<td>${item.Year || item.year || "-"}</td>
-
-<td>Active</td>
-
-</tr>
-
-`;
-
-});
-
+    // Build the rows array to set innerHTML in one single DOM operation
+    const rows = [];
+    dataToShow.forEach(item => {
+        rows.push(`
+            <tr>
+                <td>${item.Student_ID || item.id}</td>
+                <td>${item.Student_Name || item.name}</td>
+                <td>${item.branch || item.Branch || item.department}</td>
+                <td>${item.college || item.College}</td>
+                <td>${item.guide || item.Guide}</td>
+                <td>${item.semester || item.Year || item.year || "-"}</td>
+                <td>Active</td>
+            </tr>
+        `);
+    });
+    tbody.innerHTML = rows.join("");
 }
 
 renderPreview();
@@ -439,7 +418,7 @@ function loadDepartmentDropdown(){
     const select = document.getElementById("department");
 
     const departments = [...new Set(
-        getExcelData().map(s => s.Branch)
+        getExcelData().map(s => s.branch || s.Branch)
     )];
 
     select.innerHTML = "<option>All Departments</option>";
@@ -459,7 +438,7 @@ function loadCollegeDropdown(){
     const select = document.getElementById("college");
 
     const colleges = [...new Set(
-        getExcelData().map(s => s.College)
+        getExcelData().map(s => s.college || s.College)
     )];
 
     select.innerHTML = "<option>All Colleges</option>";

@@ -272,27 +272,24 @@ alert("Backup created successfully.");
 // ----------------------------
 
 function downloadBackup(index){
+  const backup = filteredBackups[index];
+  const dbData = {
+    backupMeta: backup,
+    studentManagementData: JSON.parse(localStorage.getItem("studentManagementData") || "[]"),
+    collegeData: JSON.parse(localStorage.getItem("collegeData") || "[]"),
+    guideManagementData: JSON.parse(localStorage.getItem("guideManagementData") || "[]"),
+    departmentData: JSON.parse(localStorage.getItem("departmentData") || "[]"),
+    administrators: JSON.parse(localStorage.getItem("administrators") || "[]"),
+    studentDashboardSettings: JSON.parse(localStorage.getItem("studentDashboardSettings") || "{}"),
+    studentManagementExcelData: JSON.parse(localStorage.getItem("studentManagementExcelData") || "[]")
+  };
 
-const backup=filteredBackups[index];
-
-const blob=new Blob(
-
-[JSON.stringify(backup,null,2)],
-
-{type:"application/json"}
-
-);
-
-const link=document.createElement("a");
-
-link.href=URL.createObjectURL(blob);
-
-link.download=backup.id+".json";
-
-link.click();
-
-URL.revokeObjectURL(link.href);
-
+  const blob = new Blob([JSON.stringify(dbData, null, 2)], {type: "application/json"});
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = backup.id + "_" + backup.date + "_db_backup.json";
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 // ----------------------------
@@ -300,25 +297,46 @@ URL.revokeObjectURL(link.href);
 // ----------------------------
 
 function restoreBackup(index){
-
-const backup=filteredBackups[index];
-
-if(confirm(
-
-"Restore "+backup.id+" ?"
-
-)){
-
-alert(
-
-backup.id+
-
-" restored successfully."
-
-);
-
+  const backup = filteredBackups[index];
+  alert("To restore database to state '" + backup.id + "', please upload the corresponding JSON backup file using the 'Restore Backup File' button above.");
 }
 
+// Listen to restore file input
+const restoreInput = document.getElementById("restoreFileInput");
+if (restoreInput) {
+  restoreInput.addEventListener("change", function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        
+        if (!data.studentManagementData || !data.administrators) {
+          alert("Invalid backup file structure. Please upload a valid JSON backup file.");
+          return;
+        }
+
+        if (confirm("Are you sure you want to restore the database? This will overwrite your current settings, students, colleges, guides, and departments data.")) {
+          if (data.studentManagementData) localStorage.setItem("studentManagementData", JSON.stringify(data.studentManagementData));
+          if (data.collegeData) localStorage.setItem("collegeData", JSON.stringify(data.collegeData));
+          if (data.guideManagementData) localStorage.setItem("guideManagementData", JSON.stringify(data.guideManagementData));
+          if (data.departmentData) localStorage.setItem("departmentData", JSON.stringify(data.departmentData));
+          if (data.administrators) localStorage.setItem("administrators", JSON.stringify(data.administrators));
+          if (data.studentDashboardSettings) localStorage.setItem("studentDashboardSettings", JSON.stringify(data.studentDashboardSettings));
+          if (data.studentManagementExcelData) localStorage.setItem("studentManagementExcelData", JSON.stringify(data.studentManagementExcelData));
+          
+          alert("Database restored successfully!");
+          window.location.reload();
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Failed to read backup file. Error: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
 }
 
 // ----------------------------

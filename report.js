@@ -558,33 +558,21 @@ link.click();
 // ----------------------------
 
 function updateStatistics(){
-
     const excelData = getExcelData();
 
     // Total Students
-    document.getElementById("studentCount").innerHTML =
-    excelData.length;
+    document.getElementById("studentCount").innerHTML = excelData.length;
 
     // Total Colleges
-    const colleges = new Set(
-        excelData.map(s => s.College)
-    );
-
-    document.getElementById("collegeCount").innerHTML =
-    colleges.size;
+    const collegesList = JSON.parse(localStorage.getItem("collegeData") || "[]");
+    document.getElementById("collegeCount").innerHTML = collegesList.length || 1;
 
     // Total Guides
-    const guides = new Set(
-        excelData.map(s => s.Guide)
-    );
-
-    document.getElementById("guideCount").innerHTML =
-    guides.size;
+    const guidesList = JSON.parse(localStorage.getItem("guideManagementData") || "[]");
+    document.getElementById("guideCount").innerHTML = guidesList.length || 1;
 
     // Reports Generated
-    document.getElementById("reportCount").innerHTML =
-    generatedReports.length;
-
+    document.getElementById("reportCount").innerHTML = generatedReports.length;
 }
 // ----------------------------
 // Refresh Everything

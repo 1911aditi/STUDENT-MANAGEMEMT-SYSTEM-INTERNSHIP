@@ -5,8 +5,17 @@ function saveExcelData(data) {
 }
 
 function getExcelData() {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    // Return active students database if it exists to keep other pages synchronized
+    const active = localStorage.getItem("studentManagementData");
+    if (active) {
+        try {
+            return JSON.parse(active);
+        } catch (e) {
+            console.error("Invalid stored active student data", e);
+        }
+    }
 
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
 
     try {

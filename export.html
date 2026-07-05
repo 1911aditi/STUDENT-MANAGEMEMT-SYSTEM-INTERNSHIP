@@ -17,7 +17,7 @@ href="export.css">
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="chart.umd.js?v=10"></script>
 
 </head>
 
@@ -32,20 +32,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <div>
 
 <div class="logo">
-
-<div class="logo-icon">
-
-<i class="fa-solid fa-graduation-cap"></i>
-
-</div>
-
-<div>
-
-<h2>Export Data</h2>
-
-</div>
-
-</div>
+        <div class="logo-icon">
+          <i class="fa-solid fa-file-export"></i>
+          <i class="fa-solid fa-download logo-overlay-icon"></i>
+        </div>
+        <h2>Export</h2>
+      </div>
       <nav class="menu">
         <a href="index.html" class="menu-item ">Dashboard</a>
         <a href="student.html" class="menu-item">Students</a>
@@ -61,7 +53,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         <a href="about.html" class="menu-item">About</a>
         <a href="#" class="menu-item" onclick="logout()">Logout</a>
 
-      </nav>
+              </nav>
+        <div class="excel-upload-box">
+          <label for="excelFile" class="excel-upload-label">
+            <i class="fa-solid fa-file-excel"></i> <span>Choose Excel File</span>
+          </label>
+          <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+        </div>
 
 </div>
 
@@ -760,10 +758,11 @@ Next
 </main>
 
 </div>
-<script src="auth.js"></script>
-<script src="common.js"></script>
-<script src="dataManager.js"></script>
-<script src="export.js"></script>
+<script src="auth.js?v=10"></script>
+<script src="xlsx.full.min.js?v=10"></script>
+  <script src="common.js?v=10"></script>
+<script src="dataManager.js?v=10"></script>
+<script src="export.js?v=10"></script>
 
 </body>
 

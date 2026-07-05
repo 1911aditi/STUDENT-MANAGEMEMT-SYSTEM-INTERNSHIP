@@ -23,14 +23,12 @@
         <div>
 
             <div class="logo">
-                <div class="logo-icon">
-                    🎓
-                </div>
-
-                <div>
-                    <h2>About</h2>
-                </div>
-            </div>
+        <div class="logo-icon">
+          <i class="fa-solid fa-circle-info"></i>
+          <i class="fa-solid fa-heart logo-overlay-icon"></i>
+        </div>
+        <h2>About</h2>
+      </div>
             <nav class="menu">
                 <a href="index.html" class="menu-item">Dashboard</a>
                 <a href="student.html" class="menu-item">Students</a>
@@ -46,7 +44,13 @@
                 <a href="about.html" class="menu-item active">About</a>
                 <a href="#" class="menu-item" onclick="logout()">Logout</a>
 
-            </nav>
+                    </nav>
+        <div class="excel-upload-box">
+          <label for="excelFile" class="excel-upload-label">
+            <i class="fa-solid fa-file-excel"></i> <span>Choose Excel File</span>
+          </label>
+          <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+        </div>
 
         </div>
 
@@ -505,10 +509,12 @@
     </div>
 
 </div>
-<script src="auth.js"></script>
-<script src="common.js"></script>
-<script src="auth.js"></script>
-<script src="about.js"></script>
+<script src="auth.js?v=10"></script>
+<script src="xlsx.full.min.js?v=10"></script>
+  <script src="common.js?v=10"></script>
+  <script src="dataManager.js?v=10"></script>
+<script src="auth.js?v=10"></script>
+<script src="about.js?v=10"></script>
 
 </body>
 
