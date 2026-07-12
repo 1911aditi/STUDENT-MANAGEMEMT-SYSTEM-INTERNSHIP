@@ -106,19 +106,14 @@ updateDateTime();
 // ===============================
 
 function generateCollegeID(){
-
 let max=0;
-
 colleges.forEach(c=>{
-
-let n=parseInt(c.id.replace("COL",""));
-
-if(n>max) max=n;
-
+if (c && c.id) {
+let n=parseInt(String(c.id).replace("COL",""));
+if (!isNaN(n) && n>max) max=n;
+}
 });
-
 return "COL"+String(max+1).padStart(3,"0");
-
 }
 
 // ===============================
@@ -433,66 +428,26 @@ document
 });
 
 // ======================================
-// LOCAL STORAGE
+// LOCAL STORAGE REPLACE WITH API
 // ======================================
 
-function saveData() {
-    localStorage.setItem("collegeData", JSON.stringify(colleges));
-}
-
-function loadData() {
-    const stored = localStorage.getItem("collegeData");
-    if (stored) {
-        colleges = JSON.parse(stored);
-    } else {
-        const excelData = getExcelData();
-        if (!excelData || excelData.length === 0) {
-            filteredColleges = [...colleges];
-            renderEverything();
-            return;
-        }
-
-        const collegeMap = {};
-        excelData.forEach(student => {
-            const collegeName = student.college || student.College;
-            if (!collegeName) return;
-            if (!collegeMap[collegeName]) {
-                collegeMap[collegeName] = {
-                    id: "COL" + String(Object.keys(collegeMap).length + 1).padStart(3, "0"),
-                    name: collegeName,
-                    type: student.collegeType || student["College Type"] || "Private",
-                    district: student.district || student.District || "",
-                    state: student.state || student.State || "",
-                    university: "BPUT",
-                    students: 0,
-                    guides: new Set(),
-                    departments: new Set()
-                };
-            }
-            collegeMap[collegeName].students++;
-            if (student.guide || student.Guide) collegeMap[collegeName].guides.add(student.guide || student.Guide);
-            if (student.branch || student.Branch) collegeMap[collegeName].departments.add(student.branch || student.Branch);
-        });
-
-        colleges = Object.values(collegeMap).map(college => ({
-            ...college,
-            guides: college.guides.size,
-            departments: college.departments.size
-        }));
-        saveData();
+async function loadData() {
+    try {
+        colleges = await window.fetchData('/api/colleges', 'collegeData');
+        filteredColleges = [...colleges];
+        renderEverything();
+    } catch (err) {
+        console.error(err);
     }
-    filteredColleges = [...colleges];
-    renderEverything();
 }
 loadData();
+
 // ======================================
 // FORM DATA
 // ======================================
 
 function getCollegeData() {
-
     return {
-
         id: document.getElementById("collegeId").value,
         name: document.getElementById("collegeName").value,
         type: document.getElementById("collegeType").value,
@@ -509,22 +464,17 @@ function getCollegeData() {
         code: document.getElementById("code").value,
         naac: document.getElementById("naac").value,
         departments: Number(document.getElementById("department").value || 0),
-
         students: Math.floor(Math.random() * 500) + 100,
         guides: Math.floor(Math.random() * 40) + 5
-
     };
-
 }
 
 // ======================================
 // SAVE
 // ======================================
 
-document.getElementById("collegeForm").addEventListener("submit", function(e){
-
+document.getElementById("collegeForm").addEventListener("submit", async function(e){
     e.preventDefault();
-
     const college = getCollegeData();
 
     if(college.name==""){
@@ -532,25 +482,33 @@ document.getElementById("collegeForm").addEventListener("submit", function(e){
         return;
     }
 
-    if(editIndex===null){
+    try {
+        if(editIndex===null){
+            const res = await fetch('/api/colleges', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(college)
+            });
+            if (!res.ok) throw new Error('Failed to add college.');
+            alert("College added successfully.");
+        } else {
+            const collegeId = colleges[editIndex].id;
+            const res = await fetch(`/api/colleges/${collegeId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(college)
+            });
+            if (!res.ok) throw new Error('Failed to update college.');
+            alert("College updated successfully.");
+            editIndex=null;
+        }
 
-        colleges.unshift(college);
-
-    }else{
-
-        colleges[editIndex]=college;
-        editIndex=null;
-
+        await loadData();
+        this.reset();
+        setCollegeID();
+    } catch (err) {
+        alert(err.message);
     }
-
-    saveData();
-
-    renderEverything();
-
-    this.reset();
-
-    setCollegeID();
-
 });
 
 // ======================================
@@ -558,49 +516,47 @@ document.getElementById("collegeForm").addEventListener("submit", function(e){
 // ======================================
 
 function editCollege(index){
-
     editIndex=index;
-
     const c=colleges[index];
 
     collegeId.value=c.id;
     collegeName.value=c.name;
     collegeType.value=c.type;
-    university.value=c.university;
-    address.value=c.address;
-    district.value=c.district;
-    pincode.value=c.pincode;
-    principal.value=c.principal;
-    contact.value=c.contact;
-    email.value=c.email;
-    website.value=c.website;
-    year.value=c.year;
-    code.value=c.code;
-    naac.value=c.naac;
-    department.value=c.departments;
-
+    university.value=c.university || '';
+    address.value=c.address || '';
+    district.value=c.district || '';
+    pincode.value=c.pincode || '';
+    principal.value=c.principal || '';
+    contact.value=c.contact || '';
+    email.value=c.email || '';
+    website.value=c.website || '';
+    year.value=c.year || '';
+    code.value=c.code || '';
+    naac.value=c.naac || '';
+    department.value=c.departments || 0;
 }
 
 // ======================================
 // DELETE
 // ======================================
 
-function deleteCollege(index){
-
+async function deleteCollege(index){
     if(confirm("Delete this college?")){
-
-        colleges.splice(index,1);
-
-        saveData();
-
-        renderEverything();
-
-        document.getElementById("collegeForm").reset();
-
-        setCollegeID();
-
+        const collegeId = colleges[index].id;
+        try {
+            const res = await fetch(`/api/colleges/${collegeId}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('Failed to delete college.');
+            alert("College deleted successfully.");
+            await loadData();
+            document.getElementById("collegeForm").reset();
+            setCollegeID();
+            editIndex = null;
+        } catch (err) {
+            alert(err.message);
+        }
     }
-
 }
 
 // ======================================

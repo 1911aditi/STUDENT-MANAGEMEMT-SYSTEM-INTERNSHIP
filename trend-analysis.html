@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trend Analysis</title>
+  <link rel="stylesheet" href="common.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="trend-analysis.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <h2>Trend Analysis</h2>
+      </div>
+
+      <nav class="menu">
+        <a href="index.html" class="menu-item">Dashboard</a>
+        <a href="student.html" class="menu-item">Students</a>
+        <a href="college.html" class="menu-item">Colleges</a>
+        <a href="guide.html" class="menu-item">Guides</a>
+        <a href="department.html" class="menu-item">Departments</a>
+        <a href="report.html" class="menu-item">Reports</a>
+        <a href="export.html" class="menu-item">Export Data</a>
+        <a href="settings.html" class="menu-item">Settings</a>
+        <a href="admin-management.html" class="menu-item" data-super-admin-only>Admin Management</a>
+        <a href="backup.html" class="menu-item">Backup</a>
+        <a href="trend-analysis.html" class="menu-item active">Trend Analysis</a>
+        <a href="about.html" class="menu-item">About</a>
+        <a href="#" class="menu-item" onclick="logout()">Logout</a>
+      </nav>
+
+      <div class="excel-upload-box">
+        <label for="excelFile" class="excel-upload-label">
+          <i class="fa-solid fa-file-excel"></i> <span>Choose Excel File</span>
+        </label>
+        <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-avatar">👤</div>
+        <div>
+          <div class="admin-name">Admin User</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main" id="reportArea">
+      <!-- Topbar -->
+      <header class="topbar no-print">
+        <div class="topbar-left">
+          <button class="icon-btn" id="toggleSidebar">☰</button>
+          <h2>Internship Trend & Statistical Forecasting</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="date-box" id="currentDateTime"></div>
+        </div>
+      </header>
+
+      <!-- Filters Section -->
+      <section class="card filter-card no-print">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-filter"></i> Analysis Filters</h3>
+        </div>
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label>Year</label>
+            <select id="filterYear"><option>All Years</option></select>
+          </div>
+          <div class="filter-group">
+            <label>University</label>
+            <select id="filterUniversity"><option>All Universities</option></select>
+          </div>
+          <div class="filter-group">
+            <label>College</label>
+            <select id="filterCollege"><option>All Colleges</option></select>
+          </div>
+          <div class="filter-group">
+            <label>Branch/Department</label>
+            <select id="filterBranch"><option>All Branches</option></select>
+          </div>
+          <div class="filter-group">
+            <label>State</label>
+            <select id="filterState"><option>All States</option></select>
+          </div>
+          <div class="filter-group">
+            <label>Duration (Months)</label>
+            <select id="filterDuration"><option>All Durations</option></select>
+          </div>
+        </div>
+        <div class="filter-actions" style="margin-top: 15px; display: flex; gap: 10px;">
+          <button class="primary-btn" id="applyFiltersBtn"><i class="fa-solid fa-check"></i> Apply Filters</button>
+          <button class="secondary-btn" id="resetFiltersBtn"><i class="fa-solid fa-arrows-rotate"></i> Reset Filters</button>
+        </div>
+      </section>
+
+      <!-- Action Row -->
+      <div class="action-row no-print" style="margin-bottom: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="action-btn-print" id="printReportBtn"><i class="fa-solid fa-print"></i> Print Report</button>
+        <button class="action-btn-pdf" id="exportPdfBtn"><i class="fa-solid fa-file-pdf"></i> Export to PDF</button>
+        <button class="action-btn-excel" id="exportExcelBtn"><i class="fa-solid fa-file-excel"></i> Export to Excel</button>
+      </div>
+
+      <!-- Section 2 – Summary KPIs -->
+      <h2 class="section-title">Summary KPIs</h2>
+      <section class="stats-grid trends-stats">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div>
+            <div class="stat-title">Total Applicants</div>
+            <div class="stat-value" id="statApplied">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">🎓</div>
+          <div>
+            <div class="stat-title">Total Selected</div>
+            <div class="stat-value" id="statSelected">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">🎟️</div>
+          <div>
+            <div class="stat-title">Internship Seats</div>
+            <div class="stat-value" id="statSeats">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">📈</div>
+          <div>
+            <div class="stat-title">Avg. Selection Rate</div>
+            <div class="stat-value" id="statRate">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">🏫</div>
+          <div>
+            <div class="stat-title">Colleges & Universities</div>
+            <div class="stat-value" id="statColleges">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3 – Historical Trend Analysis -->
+      <h2 class="section-title">Historical Trend Analysis</h2>
+      <section class="dashboard-grid two-col equal-cols">
+        <div class="card">
+          <div class="card-header"><h3>Year-wise Application Trends</h3></div>
+          <div class="chart-wrap"><canvas id="yearWiseChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Applicants vs Selected</h3></div>
+          <div class="chart-wrap"><canvas id="appliedSelectedChart"></canvas></div>
+        </div>
+      </section>
+      <section class="dashboard-grid two-col equal-cols">
+        <div class="card">
+          <div class="card-header"><h3>Selection Rate Trend</h3></div>
+          <div class="chart-wrap"><canvas id="selectionDoughnutChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>College Performance Comparison</h3></div>
+          <div class="chart-wrap"><canvas id="collegePerformanceChart"></canvas></div>
+        </div>
+      </section>
+
+      <!-- Section 4 – Distribution Analysis -->
+      <h2 class="section-title">Distribution Analysis</h2>
+      <section class="dashboard-grid two-col equal-cols">
+        <div class="card">
+          <div class="card-header"><h3>Branch Distribution</h3></div>
+          <div class="chart-wrap"><canvas id="branchPieChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>University Distribution</h3></div>
+          <div class="chart-wrap"><canvas id="universityBarChart"></canvas></div>
+        </div>
+      </section>
+      <section class="dashboard-grid two-col equal-cols">
+        <div class="card">
+          <div class="card-header"><h3>College Rankings (Top 5)</h3></div>
+          <div class="chart-wrap"><canvas id="collegeRankingChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Branch-wise Activity Pareto</h3></div>
+          <div class="chart-wrap"><canvas id="paretoChart"></canvas></div>
+        </div>
+      </section>
+
+      <!-- Section 5 – Statistical Analysis -->
+      <h2 class="section-title">Statistical Analysis</h2>
+      <section class="dashboard-grid two-col equal-cols">
+        <div class="card">
+          <div class="card-header"><h3>Independent Variables Correlation Matrix</h3></div>
+          <div class="table-wrap">
+            <table class="correlation-table">
+              <thead>
+                <tr>
+                  <th>Independent Variable</th>
+                  <th>Correlation Coefficient (r)</th>
+                  <th>Interpretation Strength</th>
+                </tr>
+              </thead>
+              <tbody id="correlationTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Correlation Strength Heatmap</h3></div>
+          <div class="chart-wrap"><canvas id="correlationHeatmapChart"></canvas></div>
+        </div>
+      </section>
+      <div class="card" style="margin-bottom: 25px;">
+        <div class="card-header">
+          <h3>Variable Impact Analysis</h3>
+        </div>
+        <div style="padding: 15px;">
+          <ul id="regressionImpactsList" style="padding-left: 20px; line-height: 1.6; font-size: 15px; margin: 0;">
+            <!-- Dynamically populated -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 6 – Predictive Analytics & Forecasting -->
+      <h2 class="section-title">Predictive Analytics & Forecasting</h2>
+      <div class="card regression-card" style="margin-bottom: 25px;">
+        <div class="card-header">
+          <h3>Multiple Linear Regression Model Equation: Y (Applicants) = β0 + β1X1 + β2X2 + β3X3 + β4X4 + β5X5 + β6X6 + β7X7</h3>
+        </div>
+        <div class="regression-layout" style="display: flex; gap: 20px; flex-wrap: wrap; padding: 15px;">
+          <div style="flex: 2; min-width: 300px;">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Variable</th>
+                    <th>Coefficient (β)</th>
+                    <th>p-value</th>
+                    <th>Significance</th>
+                  </tr>
+                </thead>
+                <tbody id="regressionTableBody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 15px;">
+            <div class="stat-card" style="padding: 15px;">
+              <div>
+                <div class="stat-title">R-Squared (R²)</div>
+                <div class="stat-value" id="regR2">-</div>
+              </div>
+            </div>
+            <div class="stat-card" style="padding: 15px;">
+              <div>
+                <div class="stat-title">Adjusted R²</div>
+                <div class="stat-value" id="regAdjR2">-</div>
+              </div>
+            </div>
+            <div class="stat-card" style="padding: 15px;">
+              <div>
+                <div class="stat-title">Model RMSE / MAE</div>
+                <div class="stat-value" id="regError">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <section class="dashboard-grid two-col equal-cols">
+        <div class="card">
+          <div class="card-header"><h3>Model Accuracy Comparison</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Model Name</th>
+                  <th>Fitting Error (RMSE)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="forecastComparisonBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+          <div class="best-model-banner" id="bestModelBanner" style="margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: bold; text-align: center;">
+            <!-- Best model name -->
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Future Projection Chart</h3></div>
+          <div class="chart-wrap"><canvas id="forecastChart"></canvas></div>
+        </div>
+      </section>
+      <div class="card" style="margin-top: 25px; margin-bottom: 25px;">
+        <div class="card-header"><h3>Forecasted Number of Applications</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Linear Regression</th>
+                <th>Polynomial (2nd Order)</th>
+                <th>Exponential Growth</th>
+                <th>Logistic Growth</th>
+              </tr>
+            </thead>
+            <tbody id="forecastValuesBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 7 – Historical Data -->
+      <h2 class="section-title">Historical Data</h2>
+      <div class="card" style="margin-bottom: 25px;">
+        <div class="card-header"><h3>Historical Data Records</h3></div>
+        <div class="table-wrap">
+          <table id="reportTable">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>University</th>
+                <th>College</th>
+                <th>Branch</th>
+                <th>Students Applied</th>
+                <th>Students Selected</th>
+                <th>Internship Seats</th>
+                <th>Duration (Months)</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="chart.umd.js?v=10"></script>
+  <script src="xlsx.full.min.js?v=10"></script>
+  <script src="auth.js?v=10"></script>
+  <script src="dataManager.js?v=10"></script>
+  <script src="common.js?v=10"></script>
+  <script src="trend-analysis.js"></script>
+</body>
+</html>

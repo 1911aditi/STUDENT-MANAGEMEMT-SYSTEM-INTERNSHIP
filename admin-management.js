@@ -59,19 +59,16 @@ function requirePageAccess() {
 
 }
 
-function getAdministrators() {
-  const storedAdmins = localStorage.getItem("administrators");
-
-  if (!storedAdmins) {
-    localStorage.setItem("administrators", JSON.stringify(defaultAdministrators));
-    return [...defaultAdministrators];
+async function loadAdministrators() {
+  try {
+    const res = await fetch('/api/admins');
+    if (!res.ok) throw new Error('Failed to load administrators.');
+    administrators = await res.json();
+    filteredAdministrators = [...administrators];
+    renderAll();
+  } catch (err) {
+    console.error(err);
   }
-
-  return JSON.parse(storedAdmins);
-}
-
-function saveAdministrators() {
-  localStorage.setItem("administrators", JSON.stringify(administrators));
 }
 
 function getPasswordResetRequests() {
@@ -233,7 +230,7 @@ document.getElementById("addAdminBtn").addEventListener("click", function () {
   openModal("adminModal");
 });
 
-document.getElementById("adminForm").addEventListener("submit", function (e) {
+document.getElementById("adminForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const formData = getAdminFormData();
@@ -242,51 +239,34 @@ document.getElementById("adminForm").addEventListener("submit", function (e) {
     return;
   }
 
-  if (editAdminId) {
-    const index = administrators.findIndex((admin) => admin.AdminID === editAdminId);
-
-    if (index === -1) {
-      alert("Administrator not found.");
-      return;
+  try {
+    if (editAdminId) {
+      // Find original admin to preserve password/lastlogin if not modifying
+      const originalAdmin = administrators.find((admin) => admin.AdminID === editAdminId);
+      const res = await fetch(`/api/admins/${editAdminId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...originalAdmin, ...formData })
+      });
+      if (!res.ok) throw new Error('Failed to update administrator.');
+      alert("Administrator updated successfully.");
+      editAdminId = null;
+    } else {
+      const res = await fetch('/api/admins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!res.ok) throw new Error('Failed to add administrator.');
+      alert("Administrator added successfully.");
     }
 
-    const existingPassword = administrators[index].Password;
-    const existingLastLogin = administrators[index].LastLogin;
-
-    administrators[index] = {
-      AdminID: formData.AdminID,
-      FullName: formData.FullName,
-      Username: formData.Username,
-      Password: existingPassword,
-      Email: formData.Email,
-      Phone: formData.Phone,
-      Role: formData.Role,
-      Status: formData.Status,
-      LastLogin: existingLastLogin
-    };
-
-    alert("Administrator updated successfully.");
-  } else {
-    administrators.push({
-      AdminID: formData.AdminID,
-      FullName: formData.FullName,
-      Username: formData.Username,
-      Password: formData.Password,
-      Email: formData.Email,
-      Phone: formData.Phone,
-      Role: formData.Role,
-      Status: formData.Status,
-      LastLogin: "-"
-    });
-
-    alert("Administrator added successfully.");
+    await loadAdministrators();
+    closeModal("adminModal");
+    resetAdminForm();
+  } catch (err) {
+    alert(err.message);
   }
-
-  saveAdministrators();
-  filteredAdministrators = [...administrators];
-  renderAll();
-  closeModal("adminModal");
-  resetAdminForm();
 });
 
 function editAdministrator(adminId) {
@@ -362,7 +342,7 @@ function openResetRequest(username, requestID) {
     openResetPassword(admin.AdminID);
 }
 
-document.getElementById("resetPasswordForm").addEventListener("submit", function (e) {
+document.getElementById("resetPasswordForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const adminId = document.getElementById("resetAdminId").value;
@@ -379,34 +359,37 @@ document.getElementById("resetPasswordForm").addEventListener("submit", function
     return;
   }
 
-  const index = administrators.findIndex((admin) => admin.AdminID === adminId);
-
-  if (index === -1) {
+  const admin = administrators.find((a) => a.AdminID === adminId);
+  if (!admin) {
     alert("Administrator not found.");
     return;
   }
 
-    administrators[index].Password = newPassword;
-    saveAdministrators();
+  try {
+    const res = await fetch(`/api/admins/${adminId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...admin, Password: newPassword })
+    });
+    if (!res.ok) throw new Error('Failed to reset password.');
 
     const requests = getPasswordResetRequests();
-
     const request = requests.find(r => r.RequestID === currentRequestID);
     if (request) {
       request.Status = "Completed";
+      localStorage.setItem("passwordResetRequests", JSON.stringify(requests));
+    }
 
-      localStorage.setItem(
-          "passwordResetRequests",
-          JSON.stringify(requests)
-      );
+    alert("Password reset successfully.\n\nPlease tell the Administrator the new password personally.");
+    renderPasswordRequests();
+    closeModal("resetPasswordModal");
+    await loadAdministrators();
+  } catch (err) {
+    alert(err.message);
   }
-
-  alert("Password reset successfully.\n\nPlease tell the Administrator the new password personally.");
-  renderPasswordRequests();
-  closeModal("resetPasswordModal");
 });
 
-function toggleAdministratorStatus(adminId) {
+async function toggleAdministratorStatus(adminId) {
   const admin = administrators.find((item) => item.AdminID === adminId);
 
   if (!admin) {
@@ -419,14 +402,21 @@ function toggleAdministratorStatus(adminId) {
     return;
   }
 
-  admin.Status = admin.Status === "Active" ? "Inactive" : "Active";
-
-  saveAdministrators();
-  filteredAdministrators = [...administrators];
-  renderAll();
+  const newStatus = admin.Status === "Active" ? "Inactive" : "Active";
+  try {
+    const res = await fetch(`/api/admins/${adminId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...admin, Status: newStatus })
+    });
+    if (!res.ok) throw new Error('Failed to update status.');
+    await loadAdministrators();
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
-function deleteAdministrator(adminId) {
+async function deleteAdministrator(adminId) {
   const admin = administrators.find((item) => item.AdminID === adminId);
 
   if (!admin) {
@@ -440,16 +430,20 @@ function deleteAdministrator(adminId) {
   }
 
   const confirmed = confirm("Are you sure you want to delete this administrator?");
-
   if (!confirmed) {
     return;
   }
 
-  administrators = administrators.filter((item) => item.AdminID !== adminId);
-  filteredAdministrators = [...administrators];
-
-  saveAdministrators();
-  renderAll();
+  try {
+    const res = await fetch(`/api/admins/${adminId}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error('Failed to delete administrator.');
+    alert("Administrator deleted successfully.");
+    await loadAdministrators();
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
 document.getElementById("adminSearchForm").addEventListener("submit", function (e) {
@@ -539,24 +533,14 @@ function renderPasswordRequests() {
 
 }
 
-function init() {
+async function init() {
   requirePageAccess();
 
-  administrators = getAdministrators();
-
-  const superAdmins = administrators.filter((admin) => admin.Role === "Super Administrator");
-
-  if (superAdmins.length === 0) {
-    administrators.unshift(defaultAdministrators[0]);
-    saveAdministrators();
-  }
-
-  filteredAdministrators = [...administrators];
+  await loadAdministrators();
 
   updateDateTime();
   setInterval(updateDateTime, 60000);
 
-  renderAll();
   renderPasswordRequests();
 }
 

@@ -450,58 +450,16 @@ drawCourseChart();
 // Load Local Storage
 // ----------------------------
 
-function loadData(){
-    const stored = localStorage.getItem("departmentData");
-    if (stored) {
-        departments = JSON.parse(stored);
-    } else {
-        const excelData = getExcelData();
-        if (!excelData || excelData.length === 0) {
-            filteredDepartments = [...departments];
-            renderEverything();
-            return;
-        }
-
-        const departmentMap = {};
-        excelData.forEach(student => {
-            const dept = student.branch || student.Branch;
-            if (!dept) return;
-            if (!departmentMap[dept]) {
-                departmentMap[dept] = {
-                    id: "DEP" + String(Object.keys(departmentMap).length + 1).padStart(3, "0"),
-                    name: dept,
-                    faculty: 0,
-                    students: 0,
-                    courses: 5,
-                    status: "Active"
-                };
-            }
-            departmentMap[dept].students++;
-        });
-
-        departments = Object.values(departmentMap);
-        saveData();
+async function loadData(){
+    try {
+        departments = await window.fetchData('/api/departments', 'departmentData');
+        filteredDepartments = [...departments];
+        renderEverything();
+    } catch (err) {
+        console.error(err);
     }
-    filteredDepartments = [...departments];
-    renderEverything();
 }
 loadData();
-
-// ----------------------------
-// Save Local Storage
-// ----------------------------
-
-function saveData(){
-
-    localStorage.setItem(
-
-        "departmentData",
-
-        JSON.stringify(departments)
-
-    );
-
-}
 
 // ----------------------------
 // Search
@@ -600,20 +558,20 @@ alert(
 // Delete
 // ----------------------------
 
-function deleteDepartment(index){
-
-if(confirm("Delete this department?")){
-
-departments.splice(index,1);
-
-filteredDepartments=[...departments];
-
-saveData();
-
-renderEverything();
-
-}
-
+async function deleteDepartment(index){
+  if(confirm("Delete this department?")){
+    const deptId = departments[index].id;
+    try {
+      const res = await fetch(`/api/departments/${deptId}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Failed to delete department.');
+      alert("Department deleted successfully.");
+      await loadData();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
 }
 
 // ----------------------------

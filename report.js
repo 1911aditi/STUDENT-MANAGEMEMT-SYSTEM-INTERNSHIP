@@ -387,18 +387,39 @@ drawFormatChart();
 // Load Local Storage
 // ----------------------------
 
-function loadReports(){
+let students = [];
+let colleges = [];
+let guides = [];
 
-    const excelData = getExcelData();
+async function populateFilters() {
+    const deptSelect = document.getElementById("departmentFilter");
+    if (deptSelect) {
+        deptSelect.innerHTML = '<option value="All">All Departments</option>';
+        const depts = [...new Set(students.map(s => s.branch || s.department))].filter(Boolean);
+        depts.forEach(d => {
+            deptSelect.innerHTML += `<option value="${d}">${d}</option>`;
+        });
+    }
+    
+    const colSelect = document.getElementById("collegeFilter");
+    if (colSelect) {
+        colSelect.innerHTML = '<option value="All">All Colleges</option>';
+        colleges.forEach(c => {
+            colSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+        });
+    }
+}
 
-    if (!excelData || excelData.length === 0) {
+async function loadReports(){
+    await populateFilters();
+
+    if (!students || students.length === 0) {
         filteredReports = [...reports];
         renderEverything();
         return;
     }
 
     reports = [
-
         {
             id: "REP001",
             name: "Student Report",
@@ -409,7 +430,6 @@ function loadReports(){
             format: "CSV",
             status: "Completed"
         },
-
         {
             id: "REP002",
             name: "College Report",
@@ -420,7 +440,6 @@ function loadReports(){
             format: "CSV",
             status: "Completed"
         },
-
         {
             id: "REP003",
             name: "Department Report",
@@ -431,7 +450,6 @@ function loadReports(){
             format: "CSV",
             status: "Completed"
         },
-
         {
             id: "REP004",
             name: "Guide Report",
@@ -442,16 +460,24 @@ function loadReports(){
             format: "CSV",
             status: "Completed"
         }
-
     ];
 
     filteredReports = [...reports];
-
     renderEverything();
-
 }
 
-loadReports();
+async function loadPageData() {
+    try {
+        students = await window.fetchData('/api/students', 'studentManagementData');
+        colleges = await window.fetchData('/api/colleges', 'collegeData');
+        guides = await window.fetchData('/api/guides', 'guideManagementData');
+        await loadReports();
+    } catch (e) {
+        console.error("Error loading report page data:", e);
+    }
+}
+
+loadPageData();
 
 // ----------------------------
 // Save Local Storage
@@ -558,18 +584,14 @@ link.click();
 // ----------------------------
 
 function updateStatistics(){
-    const excelData = getExcelData();
-
     // Total Students
-    document.getElementById("studentCount").innerHTML = excelData.length;
+    document.getElementById("studentCount").innerHTML = students.length;
 
     // Total Colleges
-    const collegesList = JSON.parse(localStorage.getItem("collegeData") || "[]");
-    document.getElementById("collegeCount").innerHTML = collegesList.length || 1;
+    document.getElementById("collegeCount").innerHTML = colleges.length;
 
     // Total Guides
-    const guidesList = JSON.parse(localStorage.getItem("guideManagementData") || "[]");
-    document.getElementById("guideCount").innerHTML = guidesList.length || 1;
+    document.getElementById("guideCount").innerHTML = guides.length;
 
     // Reports Generated
     document.getElementById("reportCount").innerHTML = generatedReports.length;

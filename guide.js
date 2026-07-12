@@ -110,11 +110,10 @@ function generateGuideID(){
 let max = 0;
 
 guides.forEach(g=>{
-
-const num = parseInt(g.id.replace("GUI",""));
-
-if(num>max) max=num;
-
+if (g && g.id) {
+const num = parseInt(String(g.id).replace("GUI",""));
+if (!isNaN(num) && num > max) max=num;
+}
 });
 
 return "GUI"+String(max+1).padStart(3,"0");
@@ -398,53 +397,14 @@ document.querySelector(".sidebar")
 // Local Storage
 // ------------------------------
 
-function saveGuides(){
-
-    localStorage.setItem(
-        "guideManagementData",
-        JSON.stringify(guides)
-    );
-
-}
-
-function loadGuides() {
-    const stored = localStorage.getItem("guideManagementData");
-    if (stored) {
-        guides = JSON.parse(stored);
-    } else {
-        const excelData = getExcelData();
-        if (!excelData || excelData.length === 0) {
-            filteredGuides = [...guides];
-            renderAll();
-            return;
-        }
-
-        const guideMap = {};
-        excelData.forEach(student => {
-            const guideName = student.guide || student.Guide;
-            if (!guideName) return;
-            if (!guideMap[guideName]) {
-                guideMap[guideName] = {
-                    id: "GUI" + String(Object.keys(guideMap).length + 1).padStart(3, "0"),
-                    name: guideName,
-                    department: student.branch || student.Branch || student.department || "General",
-                    designation: "Professor",
-                    students: 0,
-                    projects: 0,
-                    email: guideName.toLowerCase().replace(/[^a-z]/g, "") + "@college.edu",
-                    phone: "98765" + String(Math.floor(10000 + Math.random() * 90000)),
-                    status: student.guideStatus || student["Guide Status"] || "Active"
-                };
-            }
-            guideMap[guideName].students++;
-            if (student.project || student.Project) guideMap[guideName].projects++;
-        });
-
-        guides = Object.values(guideMap);
-        saveGuides();
+async function loadGuides() {
+    try {
+        guides = await window.fetchData('/api/guides', 'guideManagementData');
+        filteredGuides = [...guides];
+        renderAll();
+    } catch (err) {
+        console.error(err);
     }
-    filteredGuides = [...guides];
-    renderAll();
 }
 loadGuides();
 
@@ -490,42 +450,42 @@ function getGuideForm(){
 // ------------------------------
 
 document.getElementById("guideForm")
-.addEventListener("submit",function(e){
+.addEventListener("submit", async function(e){
+    e.preventDefault();
+    const guide = getGuideForm();
 
-e.preventDefault();
+    if(guide.name==""){
+        alert("Please enter Guide Name");
+        return;
+    }
 
-const guide = getGuideForm();
+    try {
+        if(editIndex===null){
+            const res = await fetch('/api/guides', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(guide)
+            });
+            if (!res.ok) throw new Error('Failed to add guide.');
+            alert("Guide added successfully.");
+        } else {
+            const guideId = guides[editIndex].id;
+            const res = await fetch(`/api/guides/${guideId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(guide)
+            });
+            if (!res.ok) throw new Error('Failed to update guide.');
+            alert("Guide updated successfully.");
+            editIndex=null;
+        }
 
-if(guide.name==""){
-
-alert("Please enter Guide Name");
-
-return;
-
-}
-
-if(editIndex===null){
-
-guides.unshift(guide);
-
-}else{
-
-guides[editIndex]=guide;
-
-editIndex=null;
-
-}
-
-filteredGuides=[...guides];
-
-saveGuides();
-
-renderAll();
-
-this.reset();
-
-setGuideID();
-
+        await loadGuides();
+        this.reset();
+        setGuideID();
+    } catch (err) {
+        alert(err.message);
+    }
 });
 
 // ------------------------------
@@ -548,24 +508,23 @@ function editGuide(index){
 // Delete Guide
 // ------------------------------
 
-function deleteGuide(index){
-
-if(confirm("Delete this guide?")){
-
-guides.splice(index,1);
-
-filteredGuides=[...guides];
-
-saveGuides();
-
-renderAll();
-
-guideForm.reset();
-
-setGuideID();
-
-}
-
+async function deleteGuide(index){
+    if(confirm("Delete this guide?")){
+        const guideId = guides[index].id;
+        try {
+            const res = await fetch(`/api/guides/${guideId}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('Failed to delete guide.');
+            alert("Guide deleted successfully.");
+            await loadGuides();
+            guideForm.reset();
+            setGuideID();
+            editIndex = null;
+        } catch (err) {
+            alert(err.message);
+        }
+    }
 }
 
 // ------------------------------

@@ -104,47 +104,24 @@ function updateDateTime() {
 function generateStudentId() {
   let max = 1258;
   students.forEach((student) => {
-    const num = parseInt(student.id.replace("STU", ""), 10);
-    if (num > max) {
-      max = num;
+    if (student && student.id) {
+      const num = parseInt(String(student.id).replace("STU", ""), 10);
+      if (!isNaN(num) && num > max) {
+        max = num;
+      }
     }
   });
   return "STU" + (max + 1);
 }
 
-function saveStudents() {
-  localStorage.setItem("studentManagementData", JSON.stringify(students));
-}
-
-function loadStudents() {
-  const stored = localStorage.getItem("studentManagementData");
-  if (stored) {
-    students = JSON.parse(stored);
-  } else {
-    const excel = getExcelData();
-    if (excel && excel.length > 0) {
-      students = excel.map((student, idx) => ({
-        id: student.Student_ID || student["Student ID"] || ("STU" + (1259 + idx)),
-        name: student.Student_Name || student.Name || "Unknown",
-        gender: student.Gender || "Male",
-        dob: student.DOB || "",
-        college: student.College || "Unknown College",
-        department: student.Branch || "General",
-        branch: student.Branch || "General",
-        semester: student.Semester || student.Year || "1st Year",
-        guide: student.Guide || "No Guide",
-        project: student.Project || "",
-        batch: student.Batch || "Batch-2 2026",
-        phone: student.Phone || "",
-        email: student.Email || "",
-        address: (student.District ? student.District + ", " : "") + (student.State || "")
-      }));
-      saveStudents();
-    } else {
-      saveStudents();
-    }
+async function loadStudents() {
+  try {
+    students = await window.fetchData('/api/students', 'studentManagementData');
+    filteredStudents = [...students];
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
   }
-  filteredStudents = [...students];
 }
 
 function setDefaultStudentId() {
@@ -380,7 +357,7 @@ function validateStudent(student) {
   return true;
 }
 
-document.getElementById("studentForm").addEventListener("submit", function (e) {
+document.getElementById("studentForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const student = getFormData();
@@ -389,18 +366,41 @@ document.getElementById("studentForm").addEventListener("submit", function (e) {
     return;
   }
 
-  if (editIndex !== null) {
-    students[editIndex] = student;
-    alert("Student updated successfully.");
-  } else {
-    students.unshift(student);
-    alert("Student added successfully.");
-  }
+  try {
+    if (editIndex !== null) {
+      // Editing student
+      const studentId = students[editIndex].id;
+      const res = await fetch(`/api/students/${studentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(student)
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to update student.');
+      }
+      alert("Student updated successfully.");
+    } else {
+      // Adding new student
+      const res = await fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(student)
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to add student.');
+      }
+      alert("Student added successfully.");
+    }
 
-  saveStudents();
-  filteredStudents = [...students];
-  renderAll();
-  clearFormForNewEntry();
+    await loadStudents();
+    filteredStudents = [...students];
+    renderAll();
+    clearFormForNewEntry();
+  } catch (err) {
+    alert(err.message);
+  }
 });
 
 function editStudent(studentId) {
@@ -428,17 +428,28 @@ function editStudent(studentId) {
   document.getElementById("address").value = student.address;
 }
 
-function removeStudent(studentId) {
+async function removeStudent(studentId) {
   const confirmed = confirm("Are you sure you want to delete this student?");
   if (!confirmed) {
     return;
   }
 
-  students = students.filter((student) => student.id !== studentId);
-  filteredStudents = [...students];
-  saveStudents();
-  renderAll();
-  clearFormForNewEntry();
+  try {
+    const res = await fetch(`/api/students/${studentId}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to delete student.');
+    }
+    alert("Student deleted successfully.");
+    await loadStudents();
+    filteredStudents = [...students];
+    renderAll();
+    clearFormForNewEntry();
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
 document.getElementById("updateBtn").addEventListener("click", function () {
@@ -478,8 +489,8 @@ document.getElementById("searchForm").addEventListener("submit", function (e) {
   const batch = document.getElementById("searchBatch").value;
 
   filteredStudents = students.filter((student) => {
-    const matchName = !name || student.name.toLowerCase().includes(name);
-    const matchId = !id || student.id.toLowerCase().includes(id);
+    const matchName = !name || String(student.name || '').toLowerCase().includes(name);
+    const matchId = !id || String(student.id || '').toLowerCase().includes(id);
     const matchCollege = !college || student.college === college;
     const matchBranch = !branch || student.branch === branch;
     const matchGuide = !guide || student.guide === guide;
@@ -542,8 +553,8 @@ function renderAll() {
   renderGenderSummary();
 }
 
-function init() {
-  loadStudents();
+async function init() {
+  await loadStudents();
   updateDateTime();
   setInterval(updateDateTime, 60000);
   setDefaultStudentId();

@@ -79,7 +79,7 @@ let departmentChart;
 let yearChart;
 
 function buildDashboardFromExcel() {
-    let studentsList = JSON.parse(localStorage.getItem("studentManagementData"));
+    let studentsList = JSON.parse(localStorage.getItem("studentManagementData_Excel"));
     if (!studentsList || studentsList.length === 0) {
         const data = getExcelData();
         if (!data || data.length === 0) return;
@@ -99,7 +99,7 @@ function buildDashboardFromExcel() {
             email: student.Email || "",
             address: (student.District ? student.District + ", " : "") + (student.State || "")
         }));
-        localStorage.setItem("studentManagementData", JSON.stringify(studentsList));
+        localStorage.setItem("studentManagementData_Excel", JSON.stringify(studentsList));
     }
 
     dashboardData.records = [];
@@ -366,18 +366,24 @@ document.getElementById("toggleSidebar").addEventListener("click", function () {
   document.querySelector(".sidebar").classList.toggle("collapsed");
 });
 
-function init() {
-
-    buildDashboardFromExcel();
-
+async function init() {
     updateDateTime();
     setInterval(updateDateTime, 60000);
 
-    updateStats();
-
-    renderTable();
-
-    createCharts();
+    try {
+        const response = await fetch('/api/dashboard/stats');
+        if (!response.ok) throw new Error('Failed to load dashboard statistics.');
+        const stats = await response.json();
+        
+        dashboardData = stats;
+        
+        updateStats();
+        renderTable();
+        createCharts();
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
 }
 
 init();

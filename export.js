@@ -135,8 +135,8 @@ function renderPreview(){
     const tbody = document.getElementById("previewTable");
     tbody.innerHTML = "";
 
-    const excelData = getExcelData();
-    let dataToShow = excelData.length > 0 ? excelData : previewData;
+    const exportData = getExportData();
+    let dataToShow = exportData.length > 0 ? exportData : previewData;
 
     const selectedDepartment = document.getElementById("department").value;
     const selectedCollege = document.getElementById("college").value;
@@ -171,7 +171,7 @@ function renderPreview(){
     tbody.innerHTML = rows.join("");
 }
 
-renderPreview();
+// renderPreview will be called inside async init
 
 // ============================================
 // PART 2
@@ -223,7 +223,7 @@ document
 
 let csv="ID,Name,Department,College,Guide,Year,Status\n";
 
-const data = getExcelData().length > 0 ? getExcelData() : previewData;
+const data = getExportData().length > 0 ? getExportData() : previewData;
 
 data.forEach(d=>{
 
@@ -265,7 +265,7 @@ document
 
 let csv="ID,Name,Department,College,Guide,Year,Status\n";
 
-const data = getExcelData().length > 0 ? getExcelData() : previewData;
+const data = getExportData().length > 0 ? getExportData() : previewData;
 
 data.forEach(d=>{
 
@@ -414,47 +414,51 @@ document.getElementById("monthExports").innerHTML=
 updateSummary();
 
 function loadDepartmentDropdown(){
-
     const select = document.getElementById("department");
-
     const departments = [...new Set(
-        getExcelData().map(s => s.branch || s.Branch)
-    )];
+        getExportData().map(s => s.branch || s.Branch || s.department)
+    )].filter(Boolean);
 
     select.innerHTML = "<option>All Departments</option>";
-
     departments.forEach(dept => {
-
         select.innerHTML += `<option>${dept}</option>`;
-
     });
-
 }
-
-loadDepartmentDropdown();
 
 function loadCollegeDropdown(){
-
     const select = document.getElementById("college");
-
     const colleges = [...new Set(
-        getExcelData().map(s => s.college || s.College)
-    )];
+        getExportData().map(s => s.college || s.College)
+    )].filter(Boolean);
 
     select.innerHTML = "<option>All Colleges</option>";
-
     colleges.forEach(college => {
-
         select.innerHTML += `<option>${college}</option>`;
-
     });
-
 }
 
-loadCollegeDropdown();
+let accessStudents = [];
 
-document.getElementById("department")
-.addEventListener("change", renderPreview);
+function getExportData() {
+    return accessStudents;
+}
 
-document.getElementById("college")
-.addEventListener("change", renderPreview);
+async function init() {
+    try {
+        const res = await fetch('/api/students');
+        if (res.ok) {
+            accessStudents = await res.json();
+        }
+    } catch (e) {
+        console.error("Error syncing student data:", e);
+    }
+    
+    loadDepartmentDropdown();
+    loadCollegeDropdown();
+    renderPreview();
+    
+    document.getElementById("department").addEventListener("change", renderPreview);
+    document.getElementById("college").addEventListener("change", renderPreview);
+}
+
+init();

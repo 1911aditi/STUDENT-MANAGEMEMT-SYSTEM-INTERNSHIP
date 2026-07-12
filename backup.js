@@ -271,25 +271,23 @@ alert("Backup created successfully.");
 // Download Backup
 // ----------------------------
 
-function downloadBackup(index){
+async function downloadBackup(index){
   const backup = filteredBackups[index];
-  const dbData = {
-    backupMeta: backup,
-    studentManagementData: JSON.parse(localStorage.getItem("studentManagementData") || "[]"),
-    collegeData: JSON.parse(localStorage.getItem("collegeData") || "[]"),
-    guideManagementData: JSON.parse(localStorage.getItem("guideManagementData") || "[]"),
-    departmentData: JSON.parse(localStorage.getItem("departmentData") || "[]"),
-    administrators: JSON.parse(localStorage.getItem("administrators") || "[]"),
-    studentDashboardSettings: JSON.parse(localStorage.getItem("studentDashboardSettings") || "{}"),
-    studentManagementExcelData: JSON.parse(localStorage.getItem("studentManagementExcelData") || "[]")
-  };
+  try {
+    const res = await fetch('/api/backup/download');
+    if (!res.ok) throw new Error('Failed to download database backup.');
+    const dbData = await res.json();
+    dbData.backupMeta = backup;
 
-  const blob = new Blob([JSON.stringify(dbData, null, 2)], {type: "application/json"});
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = backup.id + "_" + backup.date + "_db_backup.json";
-  link.click();
-  URL.revokeObjectURL(link.href);
+    const blob = new Blob([JSON.stringify(dbData, null, 2)], {type: "application/json"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = backup.id + "_" + backup.date + "_db_backup.json";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
 // ----------------------------
@@ -309,30 +307,34 @@ if (restoreInput) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
       try {
         const data = JSON.parse(e.target.result);
         
-        if (!data.studentManagementData || !data.administrators) {
-          alert("Invalid backup file structure. Please upload a valid JSON backup file.");
-          return;
-        }
+        // Support both old structure and new flat table arrays structure
+        const backupPayload = {
+          students: data.students || data.studentManagementData || [],
+          colleges: data.colleges || data.collegeData || [],
+          departments: data.departments || data.departmentData || [],
+          guides: data.guides || data.guideManagementData || [],
+          users: data.users || data.administrators || []
+        };
 
         if (confirm("Are you sure you want to restore the database? This will overwrite your current settings, students, colleges, guides, and departments data.")) {
-          if (data.studentManagementData) localStorage.setItem("studentManagementData", JSON.stringify(data.studentManagementData));
-          if (data.collegeData) localStorage.setItem("collegeData", JSON.stringify(data.collegeData));
-          if (data.guideManagementData) localStorage.setItem("guideManagementData", JSON.stringify(data.guideManagementData));
-          if (data.departmentData) localStorage.setItem("departmentData", JSON.stringify(data.departmentData));
-          if (data.administrators) localStorage.setItem("administrators", JSON.stringify(data.administrators));
-          if (data.studentDashboardSettings) localStorage.setItem("studentDashboardSettings", JSON.stringify(data.studentDashboardSettings));
-          if (data.studentManagementExcelData) localStorage.setItem("studentManagementExcelData", JSON.stringify(data.studentManagementExcelData));
-          
+          const res = await fetch('/api/backup/restore', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(backupPayload)
+          });
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || 'Failed to restore database.');
+          }
           alert("Database restored successfully!");
           window.location.reload();
         }
       } catch (err) {
-        console.error(err);
-        alert("Failed to read backup file. Error: " + err.message);
+        alert("Restore Failed: " + err.message);
       }
     };
     reader.readAsText(file);

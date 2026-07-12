@@ -1,0 +1,163 @@
+/* Trend Analysis Specific Stylesheet */
+
+.section-title {
+  margin: 35px 0 15px;
+  font-size: 20px;
+  color: var(--text-dark);
+  font-weight: 700;
+  border-left: 4px solid var(--primary);
+  padding-left: 10px;
+}
+
+.filter-card {
+  margin-bottom: 25px;
+  background: white;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.filter-group select {
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filter-group select:focus {
+  border-color: var(--primary);
+}
+
+.action-row button {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.action-row button:hover {
+  opacity: 0.9;
+}
+
+.action-btn-print {
+  background-color: #4b5563;
+}
+
+.action-btn-pdf {
+  background-color: #dc2626;
+}
+
+.action-btn-excel {
+  background-color: #16a34a;
+}
+
+.trends-stats {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+}
+
+.equal-cols {
+  grid-template-columns: 1fr 1fr !important;
+}
+
+/* Correlation strength classes */
+.correlation-strong {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.correlation-moderate {
+  background-color: rgba(234, 179, 8, 0.1);
+  color: #ca8a04;
+  font-weight: bold;
+}
+
+.correlation-weak {
+  background-color: rgba(75, 85, 99, 0.1);
+  color: #4b5563;
+}
+
+/* Regression Table specific colors */
+.significance-high {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.significance-low {
+  color: #dc2626;
+}
+
+/* Best Forecasting Model highlights */
+.best-model-banner {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.best-model-active {
+  border-left: 5px solid #16a34a;
+  background-color: rgba(22, 163, 74, 0.05);
+}
+
+/* Print Overrides */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .no-print, .sidebar, .topbar, .filter-card, .action-row {
+    display: none !important;
+  }
+  
+  .main {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid;
+    margin-bottom: 20px !important;
+  }
+  
+  .chart-wrap {
+    height: 300px !important;
+    page-break-inside: avoid;
+  }
+  
+  .section-title {
+    page-break-after: avoid;
+    border-left: 4px solid black !important;
+    color: black !important;
+  }
+}

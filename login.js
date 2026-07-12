@@ -63,42 +63,36 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   const password = document.getElementById("password").value.trim();
   const role = document.getElementById("role").value;
 
-  const admins = getAdmins();
+  fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  })
+  .then(async res => {
+    const contentType = res.headers.get('content-type');
+    let data;
+    if (contentType && contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      data = { error: text || 'Server returned an error' };
+    }
 
-  const adminIndex = admins.findIndex((admin) => {
-    return (
-      admin.Username === username &&
-      admin.Password === password &&
-      admin.Role === role
-    );
+    if (!res.ok) {
+      throw new Error(data.error || 'Login failed');
+    }
+    return data;
+  })
+  .then(user => {
+    if (user.Role !== role) {
+      throw new Error('Role mismatch. Please select the correct role.');
+    }
+    localStorage.setItem("loggedInUser", JSON.stringify(user));
+    window.location.href = "index.html";
+  })
+  .catch(err => {
+    alert(err.message);
   });
-
-  if (adminIndex === -1) {
-    alert("Invalid username, password, or role.");
-    return;
-  }
-
-  if (admins[adminIndex].Status !== "Active") {
-    alert("This administrator account is disabled. Please contact the Super Administrator.");
-    return;
-  }
-
-  admins[adminIndex].LastLogin = formatLoginDateTime();
-  saveAdmins(admins);
-
-  const sessionUser = {
-    AdminID: admins[adminIndex].AdminID,
-    FullName: admins[adminIndex].FullName,
-    Username: admins[adminIndex].Username,
-    Email: admins[adminIndex].Email,
-    Phone: admins[adminIndex].Phone,
-    Role: admins[adminIndex].Role,
-    Status: admins[adminIndex].Status
-  };
-
-  localStorage.setItem("loggedInUser", JSON.stringify(sessionUser));
-
-  window.location.href = "index.html";
 });
 
 document.getElementById("forgotPasswordBtn").addEventListener("click", function () {
