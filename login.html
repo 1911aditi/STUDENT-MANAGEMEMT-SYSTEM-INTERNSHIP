@@ -5,53 +5,117 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Student Management System</title>
   <link rel="stylesheet" href="login.css" />
+  <!-- Google Fonts: Inter and Outfit -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body>
+  <!-- Soft background decorations -->
+  <div class="bg-decoration-left">
+    <i class="fa-solid fa-graduation-cap"></i>
+  </div>
+  <div class="bg-dots-left"></div>
+  <div class="bg-dots-right"></div>
+
   <main class="login-page">
-    <section class="login-card">
-      <div class="login-logo">
-        <div class="login-logo-icon">🎓</div>
-        <h1>Student Management System</h1>
+    <div class="login-card">
+      <!-- Header Area -->
+      <div class="avatar-header">
+        <div class="avatar-circle">
+          <i class="fa-solid fa-user-graduate"></i>
+        </div>
+        <h2>Student Management System</h2>
         <p>Role Based Login</p>
       </div>
 
+      <!-- Login Form -->
       <form id="loginForm" class="login-form">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" id="username" placeholder="Enter username" required />
+          <div class="input-with-icon">
+            <i class="fa-regular fa-user input-icon"></i>
+            <input type="text" id="username" placeholder="Enter your username" required />
+          </div>
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Enter password" required />
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="password" placeholder="Enter your password" required />
+            <i class="fa-regular fa-eye-slash password-toggle" id="togglePasswordBtn"></i>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="role">Role</label>
-          <select id="role" required>
-            <option value="">Select Role</option>
-            <option value="Super Administrator">Super Administrator</option>
-            <option value="Administrator">Administrator</option>
-          </select>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-shield-halved input-icon"></i>
+            <select id="role" required>
+              <option value="" disabled selected>Select your role</option>
+              <option value="Super Administrator">Super Administrator</option>
+              <option value="Administrator">Administrator</option>
+            </select>
+            <i class="fa-solid fa-chevron-down select-chevron"></i>
+          </div>
         </div>
 
-        <button type="submit" class="login-btn">Login</button>
-
-        <button type="button" class="forgot-btn" id="forgotPasswordBtn">
-          Forgot Password?
+        <button type="submit" class="login-submit-btn">
+          <i class="fa-solid fa-right-to-bracket"></i> Login
         </button>
+
+        <div class="forgot-container">
+          <button type="button" class="forgot-link" id="forgotPasswordBtn">Forgot Password?</button>
+        </div>
       </form>
 
-      <div class="demo-box">
-        <h3>Demo Login</h3>
-        <p><strong>Super Admin:</strong> superadmin / super123</p>
-        <p><strong>Admin:</strong> admin1 / admin123</p>
+      <div class="or-separator">
+        <span>OR</span>
       </div>
-    </section>
+
+      <!-- Split Credits Section -->
+      <div class="credits-split-box">
+        <!-- Developed By Column -->
+        <div class="credit-column">
+          <div class="credit-header-group">
+            <i class="fa-solid fa-users credit-icon-blue"></i>
+            <span>Developed By</span>
+          </div>
+          <ul class="credit-list">
+            <li>Aditi Sharma</li>
+            <li>Ankeeta Mahanandia</li>
+            <li>Aryakumari Sthitapragyan</li>
+            <li>Pramod Kumar Kulhari</li>
+            <li>Susmita Subhadarshini </li>
+            <li>Pritinandini Singh</li>
+            <li>Bibhu Prasad Sahoo</li>
+          </ul>
+        </div>
+
+        <!-- Vertical Divider Line -->
+        <div class="credit-divider"></div>
+
+        <!-- Guide Column -->
+        <div class="credit-column">
+          <div class="credit-header-group">
+            <i class="fa-solid fa-user-tie credit-icon-blue"></i>
+            <span>Guide</span>
+          </div>
+          <ul class="credit-list">
+            <li>Dr. Sankarsan Padhy</li>
+            <li>Mr. Provat Mondal</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer Copyright -->
+      <div class="footer-copyright">
+        <p>© 2025 Student Management System. All rights reserved.</p>
+      </div>
+    </div>
   </main>
 
-  <!-- Forgot Password Popup -->
+  <!-- Forgot Password Modal -->
   <div class="modal-overlay" id="forgotModal">
     <div class="modal-box">
       <div class="modal-header">
@@ -62,39 +126,44 @@
       <form id="forgotPasswordForm">
         <div class="form-group">
           <label for="forgotUsername">Username</label>
-          <input type="text" id="forgotUsername" placeholder="Enter username" required />
+          <div class="input-with-icon">
+            <i class="fa-regular fa-user input-icon"></i>
+            <input type="text" id="forgotUsername" placeholder="Enter username" required />
+          </div>
         </div>
 
         <div class="form-group">
           <label for="resetReason">Reason for Password Reset</label>
-          <textarea id="resetReason" placeholder="Enter reason" required></textarea>
+          <textarea id="resetReason" placeholder="Enter reason for reset request" required></textarea>
         </div>
 
         <div class="modal-actions">
-          <button type="submit" class="primary-btn">Submit</button>
+          <button type="submit" class="primary-btn">Submit Request</button>
           <button type="button" class="secondary-btn" data-close="forgotModal">Cancel</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Forgot Password Success Popup -->
+  <!-- Success Modal -->
   <div class="modal-overlay" id="forgotSuccessModal">
-    <div class="modal-box">
+    <div class="modal-box success-modal">
       <div class="modal-header">
         <h2>Request Submitted</h2>
         <button type="button" class="close-modal" data-close="forgotSuccessModal">×</button>
       </div>
 
       <div class="success-message">
-        <div class="success-icon">✔</div>
+        <div class="success-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
         <h3>Password reset request submitted successfully.</h3>
-        <p>Please contact the Super Administrator.</p>
+        <p>Please contact the Super Administrator to approve.</p>
 
         <div class="contact-card">
-          <p><strong>Name:</strong> Super Administrator</p>
-          <p><strong>Phone Number:</strong> 9876543210</p>
-          <p><strong>Email:</strong> superadmin@college.local</p>
+          <p><i class="fa-solid fa-user-shield"></i> <strong>Name:</strong> Super Administrator</p>
+          <p><i class="fa-solid fa-phone"></i> <strong>Phone Number:</strong> 9876543210</p>
+          <p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> superadmin@college.local</p>
         </div>
       </div>
 
@@ -103,8 +172,20 @@
       </div>
     </div>
   </div>
-  
 
   <script src="login.js?v=10"></script>
+  <!-- Password visibility toggle script -->
+  <script>
+    document.getElementById("togglePasswordBtn").addEventListener("click", function() {
+      const passwordInput = document.getElementById("password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        this.className = "fa-regular fa-eye password-toggle";
+      } else {
+        passwordInput.type = "password";
+        this.className = "fa-regular fa-eye-slash password-toggle";
+      }
+    });
+  </script>
 </body>
 </html>
